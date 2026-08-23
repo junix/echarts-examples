@@ -1,0 +1,14 @@
+[
+  {"id":"sankey","use":"flow","family":"flow","question":"Where does renewable energy move and dissipate?","complexity":"advanced","tags":["sankey","energy","flow"]},
+  {"id":"sunburst","use":"hierarchy","family":"hierarchy","question":"How is a research portfolio distributed across programs?","complexity":"advanced","tags":["sunburst","hierarchy","portfolio"]},
+  {"id":"parallel","use":"multivariate","family":"multivariate","question":"How do expedition profiles differ across five conditions?","complexity":"advanced","tags":["parallel-coordinates","fieldwork","profiles"]},
+  {"id":"knowledge-graph","use":"network","family":"network","question":"Which ideas bridge the climate knowledge graph?","complexity":"advanced","tags":["graph","force","knowledge"]},
+  {"id":"treemap","use":"hierarchy","family":"hierarchy","question":"Where does a product portfolio concentrate risk and value?","complexity":"advanced","tags":["treemap","portfolio","risk"]},
+  {"id":"calendar","use":"temporal","family":"temporal","question":"When do operational anomalies cluster through the year?","complexity":"advanced","tags":["calendar","heatmap","anomaly"]},
+  {"id":"candlestick","use":"financial","family":"financial","question":"How do price, volume, and volatility align?","complexity":"advanced","tags":["candlestick","volume","finance"]},
+  {"id":"radar","use":"profile","family":"profile","question":"How do spacecraft subsystems trade performance for resilience?","complexity":"advanced","tags":["radar","engineering","comparison"]},
+  {"id":"heatmap","use":"matrix","family":"matrix","question":"Where are service dependencies both slow and frequent?","complexity":"advanced","tags":["heatmap","matrix","operations"]},
+  {"id":"gauge-cluster","use":"monitoring","family":"monitoring","question":"Can a compact instrument panel communicate system health?","complexity":"advanced","tags":["gauge","dashboard","health"]},
+  {"id":"funnel","use":"process","family":"process","question":"Where does a scientific recruitment pipeline lose candidates?","complexity":"advanced","tags":["funnel","process","conversion"]},
+  {"id":"river","use":"temporal composition","family":"temporal composition","question":"How do cultural themes rise and fall across decades?","complexity":"advanced","tags":["theme-river","streamgraph","culture"]}
+]
