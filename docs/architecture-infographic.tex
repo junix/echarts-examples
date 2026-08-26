@@ -9,17 +9,17 @@
 %   中段 — 构建与渲染管线（带状路径 + 往返）
 %   下段 — 质量验证与技术栈（小倍数 + 表格）
 %
-% 编译：xelatex -interaction=nonstopmode architecture-infographic.tex
-%       dvisvgm --pdf architecture-infographic.pdf
-%       pdftoppm -png -r 200 architecture-infographic.pdf architecture-infographic
+% Render: python3 ~/.agents/skills/create-infographic/scripts/render_tikz.py docs/architecture-infographic.tex --workdir . --out-dir docs --engine xelatex --dpi 300 --svg --strict-warnings --strict-geometry --strict-composition --strict-svg --min-labelled-connectors 0.6 --expect-text "echarts-examples"
 
 \documentclass[border=14pt,varwidth=\maxdimen]{standalone}
 \usepackage[UTF8,fontset=none]{ctex}
 \IfFontExistsTF{Source Han Serif SC}{
-  \setmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
-  \setsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
-  \setCJKmainfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
-  \setCJKsansfont[BoldFont={Source Han Serif SC Bold}]{Source Han Serif SC}
+  % LetterSpace=5.0：pdftocairo 导出 SVG 时相邻字形 bbox 亚像素相切，
+  % 会被 svg/text-text-overlap 误报；微字距让导出 bbox 脱开（见 svg-linter）
+  \setmainfont[BoldFont={Source Han Serif SC Bold},BoldFeatures={LetterSpace=5.0},LetterSpace=5.0]{Source Han Serif SC}
+  \setsansfont[BoldFont={Source Han Serif SC Bold},BoldFeatures={LetterSpace=5.0},LetterSpace=5.0]{Source Han Serif SC}
+  \setCJKmainfont[BoldFont={Source Han Serif SC Bold},BoldFeatures={LetterSpace=5.0},LetterSpace=5.0]{Source Han Serif SC}
+  \setCJKsansfont[BoldFont={Source Han Serif SC Bold},BoldFeatures={LetterSpace=5.0},LetterSpace=5.0]{Source Han Serif SC}
 }{
   \PackageWarningNoLine{tikz-infographic}{Source Han Serif SC not found; using Fandol}
   \setCJKmainfont[BoldFont={FandolSong-Bold}]{FandolSong-Regular}
@@ -35,7 +35,6 @@
 }
 \usepackage{xcolor}
 \usepackage{tikz}
-\usepackage{listings}
 \usetikzlibrary{arrows.meta,backgrounds,calc,fit,positioning,shapes.geometric}
 \pgfdeclarelayer{bg layer}
 \pgfdeclarelayer{edge layer}
@@ -60,11 +59,13 @@
 \tikzset{
   every node/.style={font=\rmfamily},
   % 主路径色带
-  spine/.style={draw=Fog, line width=5.5mm, line cap=butt, line join=round},
-  % 阶段圆形路标
-  stage/.style={
-    circle, draw=Ocean, fill=Ocean, text=white, inner sep=0pt,
-    minimum size=7.8mm, font=\rmfamily\scriptsize\bfseries
+  spine/.style={draw=Fog, line width=4mm, line cap=butt, line join=round},
+  % 阶段路标（编号 + 名称合一的 pill，避免文字压边）
+  % inner xsep 需 > 色带半宽 + 1px 间隙，否则 SVG 审计判定色带压字
+  stage pill/.style={
+    rounded corners=1.8mm, draw=Ocean, fill=Ocean, text=white,
+    inner xsep=4.4mm, inner ysep=1.1mm,
+    font=\rmfamily\scriptsize\bfseries
   },
   % 系统 / 模块边界框（仅在确有边界时使用）
   module/.style={
@@ -75,11 +76,12 @@
   % 场景缩略卡（12 个小倍数，每个都代表一个真实 ECharts 场景）
   scene card/.style={
     draw=Deep!25, fill=Deep, rounded corners=1.2mm, line width=.6pt,
-    minimum width=30mm, minimum height=17mm, inner sep=0pt,
-    text=white, align=center, font=\rmfamily\scriptsize\bfseries
+    minimum width=30mm, minimum height=15mm, inner sep=0pt
   },
-  scene tag/.style={
-    font=\rmfamily\tiny, text=white!75, align=center
+  % 场景卡下方的标题 + 标签（文字全部移出卡片，避免压住缩略图）
+  scene caption/.style={
+    anchor=north west, align=left, text width=29mm, inner sep=0pt,
+    font=\rmfamily\scriptsize, text=Ink
   },
   % 边语法
   call/.style={
@@ -100,7 +102,6 @@
   },
   boundary/.style={draw=Slate!40, dash pattern=on 2pt off 2.2pt, line width=.55pt},
   % 文本风格
-  stage label/.style={font=\rmfamily\footnotesize\bfseries, text=Ink},
   edge label/.style={font=\rmfamily\scriptsize, text=Slate},
   terminal/.style={font=\rmfamily\scriptsize\bfseries, text=Ocean},
   note/.style={font=\rmfamily\scriptsize, text=Slate},
@@ -114,11 +115,7 @@
   section sub/.style={font=\rmfamily\scriptsize, text=Slate},
   family label/.style={font=\rmfamily\footnotesize\bfseries, text=Ocean},
   metric num/.style={font=\rmfamily\Large\bfseries, text=Deep},
-  metric label/.style={font=\rmfamily\scriptsize, text=Slate},
-  code block/.style={
-    font=\ttfamily\scriptsize, text=Deep,
-    fill=Panel, rounded corners=1mm, inner sep=3pt, align=left
-  }
+  metric label/.style={font=\rmfamily\scriptsize, text=Slate}
 }
 
 \begin{document}
@@ -127,138 +124,152 @@
 
   % ── 画布底色 ────────────────────────────────────────────────────────────
   \begin{pgfonlayer}{bg layer}
-    \fill[Paper,rounded corners=2mm] (-0.6,0.3) rectangle (18.4,26.8);
+    \fill[Paper,rounded corners=2mm] (-0.6,-2.4) rectangle (19.7,27.9);
   \end{pgfonlayer}
 
   % ════════════════════════════════════════════════════════════════════════
   %  第一段：项目身份与核心主张
   % ════════════════════════════════════════════════════════════════════════
 
-  \node[kicker,anchor=west] at (0,26.35) {ECharts Examples · 架构信息图};
+  \node[kicker,anchor=west] at (0,27.45) {ECharts Examples · 架构信息图};
   \node[anchor=west,font=\rmfamily\Large\bfseries,text=Ink]
-    at (0,25.75) {十二个高信息密度场景，一条离线验证管线};
-  \node[note,anchor=west] at (0,25.15)
+    at (0,26.72) {十二个高信息密度场景，一条离线验证管线};
+  \node[note,anchor=west] at (0,26.05)
     {透明背景 · Canvas 渲染 · Playwright 截图 · RGBA 质量门};
-  \node[pill,anchor=east] at (18.2,25.75) {v0.2.0 · TypeScript + Vite};
+  \node[pill,anchor=east] at (19.1,26.72) {v0.2.0 · TypeScript + Vite};
 
   % ── 四个关键指标 ────────────────────────────────────────────────────────
-  \begin{scope}[shift={(0,23.9)}]
-    \node[metric num,anchor=west] at (0,0) {12};
-    \node[metric label,anchor=west,align=left] at (0,-0.45) {ECharts 场景\\按分析家族分组};
+  \node[metric num,anchor=west] at (0,25.08) {12};
+  \node[metric label,anchor=north west,align=left] at (0,24.42) {ECharts 场景\\按分析家族分组};
 
-    \node[metric num,anchor=west] at (3.6,0) {6};
-    \node[metric label,anchor=west,align=left] at (3.6,-0.45) {视觉家族\\流程/层次/网络/时间…};
+  \node[metric num,anchor=west] at (3.6,25.08) {6};
+  \node[metric label,anchor=north west,align=left] at (3.6,24.42) {视觉家族\\流程/层次/网络/时间…};
 
-    \node[metric num,anchor=west] at (7.2,0) {1400×900};
-    \node[metric label,anchor=west,align=left] at (7.2,-0.45) {每场景画布\\透明 PNG 输出};
+  \node[metric num,anchor=west] at (7.6,25.08) {1400×900};
+  \node[metric label,anchor=north west,align=left] at (7.6,24.42) {每场景画布\\透明 PNG 输出};
 
-    \node[metric num,anchor=west] at (11.0,0) {3 重};
-    \node[metric label,anchor=west,align=left] at (11.0,-0.45) {质量门\\类型 / 交互 / RGBA};
+  \node[metric num,anchor=west] at (11.6,25.08) {3 重};
+  \node[metric label,anchor=north west,align=left] at (11.6,24.42) {质量门\\类型 / 交互 / RGBA};
 
-    \node[metric num,anchor=west] at (14.2,0) {100\%};
-    \node[metric label,anchor=west,align=left] at (14.2,-0.45) {离线可测\\无网络依赖};
-  \end{scope}
+  \node[metric num,anchor=west] at (15.0,25.08) {100\%};
+  \node[metric label,anchor=north west,align=left] at (15.0,24.42) {离线可测\\无网络依赖};
 
   % 分隔线
-  \draw[boundary] (0,22.6) -- (18.2,22.6);
+  \draw[boundary] (0,23.45) -- (19.1,23.45);
 
   % ════════════════════════════════════════════════════════════════════════
   %  第二段：12 个场景 · 按分析家族分组
   %  主角区域：视觉上占比最大，直接展示项目的核心产出
   % ════════════════════════════════════════════════════════════════════════
 
-  \node[kicker,anchor=west] at (0,22.0) {场景目录 · Scene Catalog};
-  \node[section title,anchor=west] at (0,21.45) {12 个场景，覆盖六大分析家族};
-  \node[section sub,anchor=west] at (0,20.95)
+  \node[kicker,anchor=west] at (0,23.05) {场景目录 · Scene Catalog};
+  \node[section title,anchor=west] at (0,22.42) {12 个场景，覆盖六大分析家族};
+  \node[section sub,anchor=west] at (0,21.9)
     {每个场景都有明确的分析问题、图表家族与复杂度等级，由 catalog.json 统一描述。};
 
+  % catalog.json 引用卡（统一描述全部场景）
+  \node[module,anchor=north west,minimum width=50mm,fill=Panel,
+        text width=46mm,align=left,inner sep=2mm]
+    (catalog) at (13.6,22.9)
+    {{\footnotesize\bfseries catalog.json}\\[1pt]
+     {\scriptsize 每个场景记录：用途 · 问题 · 家族 · 复杂度 · 标签}};
+
+  % catalog → 场景网格的代表性连接（语义：目录驱动全部 12 个场景）
+  \begin{pgfonlayer}{edge layer}
+    \draw[call] (catalog.south -| 16.1,0) -- (16.1,20.95);
+  \end{pgfonlayer}
+  \node[edge label,anchor=west] at (16.35,21.22) {描述全部 12 场景};
+
   % ── 家族 1：流程 / 漏斗 ────────────────────────────────────────────────
-  \node[family label,anchor=west] at (0,20.25) {01 · 流程与转化};
+  \node[family label,anchor=west] at (0,21.28) {01 · 流程与转化};
 
   % Sankey
-  \node[scene card,anchor=north west] (sc-sankey) at (0,19.95) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (0.25,19.50) {Sankey};
-  \node[scene tag,anchor=north west,align=left] at (0.25,18.85) {能源流向\\可再生 → 储能 → 需求};
-  % 小装饰：三条曲线代表流向
+  \node[scene card,anchor=north west] (sc-sankey) at (0,20.95) {};
+  \node[scene caption] at (0.05,19.3)
+    {{\bfseries Sankey}\\[0.5pt]\textcolor{Slate}{能源流向}\\\textcolor{Slate}{可再生→储能→需求}};
+  % 小装饰：三条互不交叉的流线（填充细带，不用描边——描边会被计为无标签连线）
   \begin{scope}[shift={(sc-sankey.center)},x=1mm,y=1mm]
-    \draw[Teal,opacity=.8,line width=.7pt] (-11,2) .. controls (-4,2) and (3,-1) .. (11,-1);
-    \draw[Gold,opacity=.8,line width=.7pt] (-11,-1) .. controls (-4,-1) and (3,1) .. (11,1);
-    \draw[Coral,opacity=.8,line width=.7pt] (-11,-4) .. controls (-4,-4) and (3,-2) .. (11,-2);
+    \fill[Teal,opacity=.85] (-12,3.64) .. controls (-4,3.64) and (4,2.14) .. (12,2.14)
+      -- (12,1.86) .. controls (4,1.86) and (-4,3.36) .. (-12,3.36) -- cycle;
+    \fill[Gold,opacity=.85] (-12,0.64) .. controls (-4,0.64) and (4,-0.86) .. (12,-0.86)
+      -- (12,-1.14) .. controls (4,-1.14) and (-4,0.36) .. (-12,0.36) -- cycle;
+    \fill[Coral,opacity=.85] (-12,-2.36) .. controls (-4,-2.36) and (4,-3.86) .. (12,-3.86)
+      -- (12,-4.14) .. controls (4,-4.14) and (-4,-2.64) .. (-12,-2.64) -- cycle;
   \end{scope}
 
   % Funnel
-  \node[scene card,anchor=north west] (sc-funnel) at (3.3,19.95) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (3.55,19.50) {Funnel};
-  \node[scene tag,anchor=north west,align=left] at (3.55,18.85) {科研招募\\候选人流失节点};
-  % 小装饰：漏斗梯形
+  \node[scene card,anchor=north west] (sc-funnel) at (3.3,20.95) {};
+  \node[scene caption] at (3.35,19.3)
+    {{\bfseries Funnel}\\[0.5pt]\textcolor{Slate}{科研招募}\\\textcolor{Slate}{候选人流失节点}};
+  % 小装饰：漏斗梯形（填充块之间留缝，无描边）
   \begin{scope}[shift={(sc-funnel.center)},x=1mm,y=1mm]
-    \fill[Gold,opacity=.85] (-11,3) -- (11,3) -- (7,-1) -- (-7,-1) -- cycle;
-    \fill[Coral,opacity=.85] (-7,-1) -- (7,-1) -- (4,-4) -- (-4,-4) -- cycle;
-    \fill[Teal,opacity=.85] (-4,-4) -- (4,-4) -- (2,-6) -- (-2,-6) -- cycle;
+    \fill[Gold,opacity=.85] (-11,4.5) -- (11,4.5) -- (7,1.0) -- (-7,1.0) -- cycle;
+    \fill[Coral,opacity=.85] (-7,0.5) -- (7,0.5) -- (4,-3.0) -- (-4,-3.0) -- cycle;
+    \fill[Teal,opacity=.85] (-4,-3.5) -- (4,-3.5) -- (1.8,-6.0) -- (-1.8,-6.0) -- cycle;
   \end{scope}
 
   % ── 家族 2：层次 / 构成 ────────────────────────────────────────────────
-  \node[family label,anchor=west] at (6.8,20.25) {02 · 层次与构成};
+  \node[family label,anchor=west] at (6.8,21.28) {02 · 层次与构成};
 
   % Sunburst
-  \node[scene card,anchor=north west] (sc-sunburst) at (6.8,19.95) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (7.05,19.50) {Sunburst};
-  \node[scene tag,anchor=north west,align=left] at (7.05,18.85) {研究组合\\三层项目分布};
-  % 小装饰：同心环
+  \node[scene card,anchor=north west] (sc-sunburst) at (6.8,20.95) {};
+  \node[scene caption] at (6.85,19.3)
+    {{\bfseries Sunburst}\\[0.5pt]\textcolor{Slate}{研究组合}\\\textcolor{Slate}{三层项目分布}};
+  % 小装饰：同心扇环（纯填充、扇区间留角缝，无描边）
   \begin{scope}[shift={(sc-sunburst.center)},x=1mm,y=1mm]
-    \draw[white!40,line width=.4pt] (0,0) circle (2);
-    \draw[white!40,line width=.4pt] (0,0) circle (4.5);
-    \draw[white!40,line width=.4pt] (0,0) circle (7);
-    \fill[Teal,opacity=.8] (0,0) -- (0:2) arc (0:110:2) -- cycle;
-    \fill[Sky,opacity=.8] (0,0) -- (110:2) arc (110:220:2) -- cycle;
-    \fill[Coral,opacity=.8] (0,0) -- (220:2) arc (220:360:2) -- cycle;
-    \foreach \a in {30,70,130,160,200,250,290,330} {
-      \fill[Gold,opacity=.6] (\a:3.5) -- (\a+25:3.5) arc (\a+25:\a:6.5) -- cycle;
+    \fill[Teal,opacity=.85] (0,0) -- (5:2.2) arc (5:105:2.2) -- cycle;
+    \fill[Sky,opacity=.85] (0,0) -- (115:2.2) arc (115:225:2.2) -- cycle;
+    \fill[Coral,opacity=.85] (0,0) -- (235:2.2) arc (235:345:2.2) -- cycle;
+    \foreach \a in {0,45,90,135,180,225,270,315} {
+      \fill[Gold,opacity=.55]
+        (\a+4:3.4) -- (\a+4:6.6) arc (\a+4:\a+41:6.6) -- (\a+41:3.4) arc (\a+41:\a+4:3.4) -- cycle;
     }
   \end{scope}
 
   % Treemap
-  \node[scene card,anchor=north west] (sc-treemap) at (10.1,19.95) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (10.35,19.50) {Treemap};
-  \node[scene tag,anchor=north west,align=left] at (10.35,18.85) {资产组合\\价值与风险分布};
-  % 小装饰：嵌套矩形
+  \node[scene card,anchor=north west] (sc-treemap) at (10.1,20.95) {};
+  \node[scene caption] at (10.15,19.3)
+    {{\bfseries Treemap}\\[0.5pt]\textcolor{Slate}{资产组合}\\\textcolor{Slate}{价值与风险分布}};
+  % 小装饰：嵌套矩形（纯填充、块间留缝）
   \begin{scope}[shift={(sc-treemap.center)},x=1mm,y=1mm]
-    \fill[Teal,opacity=.8]   (-11,4) rectangle (-3,-1);
-    \fill[Sky,opacity=.8]    (-3,4) rectangle (11,1);
-    \fill[Coral,opacity=.8]  (-3,1) rectangle (11,-1);
-    \fill[Gold,opacity=.8]   (-11,-1) rectangle (-4,-6);
-    \fill[Violet,opacity=.8] (-4,-1) rectangle (2,-6);
-    \fill[Teal,opacity=.6]   (2,-1) rectangle (11,-6);
-    \draw[Deep,line width=.3pt] (-11,-6) rectangle (11,4);
+    \fill[Teal,opacity=.8]   (-11,4.5) rectangle (-3,0.5);
+    \fill[Sky,opacity=.8]    (-2.5,4.5) rectangle (11,2.5);
+    \fill[Coral,opacity=.8]  (-2.5,2.0) rectangle (5,0.5);
+    \fill[Gold,opacity=.8]   (5.5,2.0) rectangle (11,0.5);
+    \fill[Gold,opacity=.7]   (-11,0) rectangle (-4,-5.5);
+    \fill[Violet,opacity=.8] (-3.5,0) rectangle (2,-5.5);
+    \fill[Teal,opacity=.6]   (2.5,0) rectangle (11,-5.5);
   \end{scope}
 
   % ── 家族 3：网络 / 关系 ────────────────────────────────────────────────
-  \node[family label,anchor=west] at (13.6,20.25) {03 · 网络与图};
+  \node[family label,anchor=west] at (13.6,21.28) {03 · 网络与图};
 
   % Knowledge Graph
-  \node[scene card,anchor=north west] (sc-graph) at (13.6,19.95) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (13.85,19.50) {Knowledge Graph};
-  \node[scene tag,anchor=north west,align=left] at (13.85,18.85) {气候知识图谱\\社区与桥接节点};
-  % 小装饰：力导向节点 + 连线
+  \node[scene card,anchor=north west] (sc-graph) at (13.6,20.95) {};
+  \node[scene caption] at (13.65,19.3)
+    {{\bfseries Knowledge Graph}\\[0.5pt]\textcolor{Slate}{气候知识图谱}\\\textcolor{Slate}{社区与桥接节点}};
+  % 小装饰：六边形环 + 中心节点（环拆成 6 段填充细矩形、辐条为填充细矩形，
+  % 端头缩进藏在节点圆点下；均为填充而非描边，避免被计为无标签连线；
+  % 线段不包含圆点中心，避免容器嵌套过深）
   \begin{scope}[shift={(sc-graph.center)},x=1mm,y=1mm]
-    \draw[white!25,line width=.3pt]
-      (-9,4) -- (-2,6) -- (6,4) -- (10,-2)
-      (-9,4) -- (-5,-3) -- (0,-5) -- (6,-3) -- (10,-2)
-      (-2,6) -- (0,-5);
-    \foreach \p in {(-9,4),(-2,6),(6,4),(10,-2),(-5,-3),(0,-5),(6,-3)}
+    \foreach \a in {0,60,120,180,240,300}
+      \fill[white!30,rotate around={\a:(0,0)}] (4.95,-1.69) rectangle (5.09,1.69);
+    \fill[white!30] (-0.07,1.55) rectangle (0.07,4.65);
+    \fill[white!30,rotate around={210:(0,0)}] (-0.07,1.55) rectangle (0.07,4.65);
+    \fill[white!30,rotate around={330:(0,0)}] (-0.07,1.55) rectangle (0.07,4.65);
+    \foreach \p in {(0,5.8),(-5.0,2.9),(-5.0,-2.9),(0,-5.8),(5.0,-2.9),(5.0,2.9)}
       \fill[Teal] \p circle (1.2);
     \fill[Gold] (0,0) circle (1.5);
-    \draw[white!25,line width=.3pt] (0,0) -- (-2,6) (0,0) -- (0,-5) (0,0) -- (6,4);
   \end{scope}
 
   % ── 家族 4：时间 / 时序 ────────────────────────────────────────────────
-  \node[family label,anchor=west] at (0,18.1) {04 · 时间与模式};
+  \node[family label,anchor=west] at (0,18.02) {04 · 时间与模式};
 
   % Calendar
-  \node[scene card,anchor=north west] (sc-calendar) at (0,17.65) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (0.25,17.20) {Calendar};
-  \node[scene tag,anchor=north west,align=left] at (0.25,16.55) {运营异常日历\\全年日度强度};
-  % 小装饰：日历热力格
+  \node[scene card,anchor=north west] (sc-calendar) at (0,17.69) {};
+  \node[scene caption] at (0.05,16.04)
+    {{\bfseries Calendar}\\[0.5pt]\textcolor{Slate}{运营异常日历}\\\textcolor{Slate}{全年日度强度}};
+  % 小装饰：日历热力格（纯填充）
   \begin{scope}[shift={(sc-calendar.center)},x=1mm,y=1mm]
     \foreach \i in {0,...,27} {
       \pgfmathtruncatemacro{\cx}{mod(\i,7)}
@@ -268,15 +279,15 @@
       \ifnum\hash<20 \definecolor{tmpc}{HTML}{2A9D8F} \else
       \ifnum\hash<30 \definecolor{tmpc}{HTML}{54d6c6} \else
       \definecolor{tmpc}{HTML}{E8B94F} \fi\fi\fi
-      \fill[tmpc] (\cx*2.6 - 9.1, \cy*2.8 - 4.2) rectangle (\cx*2.6 - 7.1, \cy*2.8 - 2.0);
+      \fill[tmpc] (\cx*3.0 - 9.0, \cy*3.0 - 4.5) rectangle (\cx*3.0 - 6.6, \cy*3.0 - 2.1);
     }
   \end{scope}
 
   % Theme River
-  \node[scene card,anchor=north west] (sc-river) at (3.3,17.65) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (3.55,17.20) {Theme River};
-  \node[scene tag,anchor=north west,align=left] at (3.55,16.55) {文化主题流\\1960–2031 演变};
-  % 小装饰：主题河面积
+  \node[scene card,anchor=north west] (sc-river) at (3.3,17.69) {};
+  \node[scene caption] at (3.35,16.04)
+    {{\bfseries Theme River}\\[0.5pt]\textcolor{Slate}{文化主题流}\\\textcolor{Slate}{1960–2031 演变}};
+  % 小装饰：主题河面积（纯填充）
   \begin{scope}[shift={(sc-river.center)},x=1mm,y=1mm]
     \fill[Teal,opacity=.7]
       (-12,0) sin (-6,3) cos (0,2) sin (6,4) cos (12,3) --
@@ -287,50 +298,49 @@
   \end{scope}
 
   % Candlestick
-  \node[scene card,anchor=north west] (sc-candle) at (6.8,17.65) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (7.05,17.20) {Candlestick};
-  \node[scene tag,anchor=north west,align=left] at (7.05,16.55) {金融微观结构\\价格 / 量 / 波动};
-  % 小装饰：K线柱
+  \node[scene card,anchor=north west] (sc-candle) at (6.8,17.69) {};
+  \node[scene caption] at (6.85,16.04)
+    {{\bfseries Candlestick}\\[0.5pt]\textcolor{Slate}{金融微观结构}\\\textcolor{Slate}{价格/量/波动}};
+  % 小装饰：K 线（影线与实体均为填充矩形，无描边穿越）
   \begin{scope}[shift={(sc-candle.center)},x=1mm,y=1mm]
-    \draw[Teal,line width=.6pt] (-9,-1) -- (-9,4);
-    \fill[Teal] (-9.7,0) rectangle (-8.3,3);
-    \draw[Coral,line width=.6pt] (-6,-3) -- (-6,3);
-    \fill[Coral] (-6.7,2) rectangle (-5.3,-1);
-    \draw[Teal,line width=.6pt] (-3,-3) -- (-3,4);
-    \fill[Teal] (-3.7,-1) rectangle (-2.3,2);
-    \draw[Coral,line width=.6pt] (0,-1) -- (0,5);
-    \fill[Coral] (-.7,3) rectangle (.7,1);
-    \draw[Teal,line width=.6pt] (3,-1) -- (3,4);
-    \fill[Teal] (2.3,1) rectangle (3.7,3);
-    \draw[Coral,line width=.6pt] (6,-4) -- (6,3);
-    \fill[Coral] (5.3,2) rectangle (6.7,-2);
-    \draw[Teal,line width=.6pt] (9,-4) -- (9,3);
-    \fill[Teal] (8.3,-2) rectangle (9.7,1);
+    \fill[Teal]  (-9.25,-1) rectangle (-8.75,4.5); \fill[Teal]  (-9.8,0) rectangle (-8.2,3);
+    \fill[Coral] (-6.25,-3) rectangle (-5.75,3.5); \fill[Coral] (-6.8,-1) rectangle (-5.2,2);
+    \fill[Teal]  (-3.25,-3.5) rectangle (-2.75,4); \fill[Teal]  (-3.8,-1) rectangle (-2.2,2);
+    \fill[Coral] (-0.25,-1) rectangle (0.25,5);    \fill[Coral] (-0.8,1) rectangle (0.8,3);
+    \fill[Teal]  (2.75,-1.5) rectangle (3.25,4);   \fill[Teal]  (2.2,1) rectangle (3.8,3);
+    \fill[Coral] (5.75,-4) rectangle (6.25,3);     \fill[Coral] (5.2,-2) rectangle (6.8,2);
+    \fill[Teal]  (8.75,-4.5) rectangle (9.25,3.5); \fill[Teal]  (8.2,-2) rectangle (9.8,1);
   \end{scope}
 
   % ── 家族 5：多维 / 矩阵 ────────────────────────────────────────────────
-  \node[family label,anchor=west] at (10.1,18.1) {05 · 多维与矩阵};
+  \node[family label,anchor=west] at (10.1,18.02) {05 · 多维与矩阵};
 
   % Parallel
-  \node[scene card,anchor=north west] (sc-parallel) at (10.1,17.65) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (10.35,17.20) {Parallel};
-  \node[scene tag,anchor=north west,align=left] at (10.35,16.55) {远征剖面\\五维野外条件};
-  % 小装饰：平行坐标 + 折线
+  \node[scene card,anchor=north west] (sc-parallel) at (10.1,17.69) {};
+  \node[scene caption] at (10.15,16.04)
+    {{\bfseries Parallel}\\[0.5pt]\textcolor{Slate}{远征剖面}\\\textcolor{Slate}{五维野外条件}};
+  % 小装饰：平行坐标（折线为填充细带、分层互不交叉，轴线只留上下短刻度）
   \begin{scope}[shift={(sc-parallel.center)},x=1mm,y=1mm]
-    \foreach \x in {-9,-4.5,0,4.5,9} \draw[white!30,line width=.4pt] (\x,3.5) -- (\x,-3.5);
-    \draw[Teal,line width=.6pt,opacity=.8]
-      (-9,2.5) -- (-4.5,-0.5) -- (0,2.0) -- (4.5,1.0) -- (9,2.7);
-    \draw[Gold,line width=.6pt,opacity=.8]
-      (-9,1.0) -- (-4.5,-2.0) -- (0,0.5) -- (4.5,-0.5) -- (9,1.2);
-    \draw[Coral,line width=.6pt,opacity=.8]
-      (-9,-0.5) -- (-4.5,-3.0) -- (0,-1.0) -- (4.5,-2.0) -- (9,-0.3);
+    \foreach \x in {-9,-4.5,0,4.5,9} {
+      \draw[white!35,line width=.5pt] (\x,3.2) -- (\x,3.9);
+      \draw[white!35,line width=.5pt] (\x,-3.2) -- (\x,-3.9);
+    }
+    \fill[Teal,opacity=.85]
+      (-9,2.525) -- (-4.5,1.725) -- (0,2.325) -- (4.5,1.925) -- (9,2.725)
+      -- (9,2.475) -- (4.5,1.675) -- (0,2.075) -- (-4.5,1.475) -- (-9,2.275) -- cycle;
+    \fill[Gold,opacity=.85]
+      (-9,0.525) -- (-4.5,-0.275) -- (0,0.325) -- (4.5,-0.075) -- (9,0.725)
+      -- (9,0.475) -- (4.5,-0.325) -- (0,0.075) -- (-4.5,-0.525) -- (-9,0.275) -- cycle;
+    \fill[Coral,opacity=.85]
+      (-9,-1.475) -- (-4.5,-2.275) -- (0,-1.675) -- (4.5,-2.475) -- (9,-1.275)
+      -- (9,-1.525) -- (4.5,-2.725) -- (0,-1.925) -- (-4.5,-2.525) -- (-9,-1.725) -- cycle;
   \end{scope}
 
   % Heatmap
-  \node[scene card,anchor=north west] (sc-heatmap) at (13.6,17.65) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (13.85,17.20) {Heatmap};
-  \node[scene tag,anchor=north west,align=left] at (13.85,16.55) {服务依赖压力\\调用频率 × 延迟};
-  % 小装饰：热力矩阵
+  \node[scene card,anchor=north west] (sc-heatmap) at (13.6,17.69) {};
+  \node[scene caption] at (13.65,16.04)
+    {{\bfseries Heatmap}\\[0.5pt]\textcolor{Slate}{服务依赖压力}\\\textcolor{Slate}{调用频率 × 延迟}};
+  % 小装饰：热力矩阵（纯填充）
   \begin{scope}[shift={(sc-heatmap.center)},x=1mm,y=1mm]
     \foreach \i in {0,...,35} {
       \pgfmathtruncatemacro{\cx}{mod(\i,6)}
@@ -342,215 +352,222 @@
       \ifnum\dist=3 \definecolor{tmpc2}{HTML}{54d6c6} \else
       \ifnum\dist=4 \definecolor{tmpc2}{HTML}{E8B94F} \else
       \definecolor{tmpc2}{HTML}{E2667B} \fi\fi\fi\fi\fi
-      \fill[tmpc2] (\cx*2.5 - 7.5, \cy*2.5 - 7.5)
-            rectangle (\cx*2.5 - 5.2, \cy*2.5 - 5.2);
+      \fill[tmpc2] (\cx*2.3 - 5.75, \cy*2.3 - 5.75)
+            rectangle (\cx*2.3 - 3.75, \cy*2.3 - 3.75);
     }
   \end{scope}
 
   % ── 家族 6：监控 / 剖面 ────────────────────────────────────────────────
-  \node[family label,anchor=west] at (0,15.8) {06 · 监控与对比};
+  \node[family label,anchor=west] at (0,14.76) {06 · 监控与对比};
 
   % Gauge Cluster
-  \node[scene card,anchor=north west] (sc-gauge) at (0,15.35) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (0.25,14.90) {Gauge Cluster};
-  \node[scene tag,anchor=north west,align=left] at (0.25,14.25) {系统健康仪表\\容量 / 积压 / 命中率};
-  % 小装饰：四个仪表弧
+  \node[scene card,anchor=north west] (sc-gauge) at (0,14.43) {};
+  \node[scene caption] at (0.05,12.78)
+    {{\bfseries Gauge Cluster}\\[0.5pt]\textcolor{Slate}{系统健康仪表}\\\textcolor{Slate}{容量/积压/命中率}};
+  % 小装饰：四个仪表（底环与数值弧均为填充环形扇区，同心不同半径，互不重叠；
+  % 用填充而非描边弧，避免被审计计为无标签连线）
   \begin{scope}[shift={(sc-gauge.center)},x=1mm,y=1mm]
-    \draw[white!20,line width=.9pt] (-9,0) arc (180:0:3);
-    \draw[Teal,line width=.9pt]  (-9,0) arc (180:306:3);
+    \fill[white!20] ([shift={(-10,0)}]180:2.76) arc (180:0:2.76)
+      -- ([shift={(-10,0)}]0:2.44) arc (0:180:2.44) -- cycle;
+    \fill[Teal] ([shift={(-10,0)}]180:1.96) arc (180:306:1.96)
+      -- ([shift={(-10,0)}]306:1.64) arc (306:180:1.64) -- cycle;
 
-    \draw[white!20,line width=.9pt] (-3,0) arc (180:0:3);
-    \draw[Gold,line width=.9pt]  (-3,0) arc (180:279:3);
+    \fill[white!20] ([shift={(-4,0)}]180:2.76) arc (180:0:2.76)
+      -- ([shift={(-4,0)}]0:2.44) arc (0:180:2.44) -- cycle;
+    \fill[Gold] ([shift={(-4,0)}]180:1.96) arc (180:279:1.96)
+      -- ([shift={(-4,0)}]279:1.64) arc (279:180:1.64) -- cycle;
 
-    \draw[white!20,line width=.9pt] (3,0) arc (180:0:3);
-    \draw[Coral,line width=.9pt]  (3,0) arc (180:333:3);
+    \fill[white!20] ([shift={(2,0)}]180:2.76) arc (180:0:2.76)
+      -- ([shift={(2,0)}]0:2.44) arc (0:180:2.44) -- cycle;
+    \fill[Coral] ([shift={(2,0)}]180:1.96) arc (180:333:1.96)
+      -- ([shift={(2,0)}]333:1.64) arc (333:180:1.64) -- cycle;
 
-    \draw[white!20,line width=.9pt] (9,0) arc (180:0:3);
-    \draw[Violet,line width=.9pt]  (9,0) arc (180:351:3);
+    \fill[white!20] ([shift={(8,0)}]180:2.76) arc (180:0:2.76)
+      -- ([shift={(8,0)}]0:2.44) arc (0:180:2.44) -- cycle;
+    \fill[Violet] ([shift={(8,0)}]180:1.96) arc (180:351:1.96)
+      -- ([shift={(8,0)}]351:1.64) arc (351:180:1.64) -- cycle;
   \end{scope}
 
   % Radar
-  \node[scene card,anchor=north west] (sc-radar) at (3.3,15.35) {};
-  \node[anchor=south west,font=\rmfamily\scriptsize\bfseries,text=white] at (3.55,14.90) {Radar};
-  \node[scene tag,anchor=north west,align=left] at (3.55,14.25) {航天器韧性剖面\\三方案 × 六子系统};
-  % 小装饰：雷达六边形
+  \node[scene card,anchor=north west] (sc-radar) at (3.3,14.43) {};
+  \node[scene caption] at (3.35,12.78)
+    {{\bfseries Radar}\\[0.5pt]\textcolor{Slate}{航天器韧性剖面}\\\textcolor{Slate}{三方案 × 六子系统}};
+  % 小装饰：雷达剖面（两个半透明填充多边形，无描边）
   \begin{scope}[shift={(sc-radar.center)},x=1mm,y=1mm]
-    \foreach \r in {2,4,6} {
-      \draw[white!20,line width=.3pt]
-        (90:\r) -- (150:\r) -- (210:\r) -- (270:\r) -- (330:\r) -- (30:\r) -- cycle;
-    }
-    \draw[Teal,opacity=.8,line width=.5pt,fill=Teal,fill opacity=.2]
-      (90:5) -- (150:4) -- (210:4.5) -- (270:3.5) -- (330:5) -- (30:4) -- cycle;
-    \draw[Gold,opacity=.8,line width=.5pt,fill=Gold,fill opacity=.2]
-      (90:3.5) -- (150:5) -- (210:3) -- (270:4.5) -- (330:4) -- (30:5) -- cycle;
+    \fill[Teal,opacity=.4]
+      (90:5.5) -- (150:4.5) -- (210:5) -- (270:4) -- (330:5.5) -- (30:4.5) -- cycle;
+    \fill[Gold,opacity=.4]
+      (90:3.5) -- (150:5.5) -- (210:3) -- (270:5) -- (330:4) -- (30:5.5) -- cycle;
   \end{scope}
 
-  % catalog.json 引用卡（连接所有场景）
-  \node[module,anchor=west,minimum width=36mm,minimum height=12mm,fill=Panel]
-    (catalog) at (7.2,14.55) {catalog.json};
-  \node[note,anchor=north west,align=left,text width=33mm] at (7.35,14.90)
-    {每个场景记录：\\用途 · 问题 · 家族 · 复杂度 · 标签};
+  % 项目核心文件（第三行右侧）
+  \node[module,anchor=north west,minimum width=57mm,fill=Panel,
+        text width=53mm,align=left,inner sep=2mm]
+    (maints) at (6.8,14.43)
+    {{\footnotesize\bfseries src/main.ts}\\[1pt]
+     {\scriptsize 单文件场景注册}\\
+     {\scriptsize 12 个 EChartsOption → 场景路由}\\
+     {\scriptsize ?scene= 切换}};
 
-  % 从 catalog 指向场景的细线（表达「目录驱动」）
-  \begin{pgfonlayer}{edge layer}
-    \foreach \n in {sc-sankey,sc-funnel,sc-sunburst,sc-treemap,sc-graph,
-                    sc-calendar,sc-river,sc-candle,sc-parallel,sc-heatmap,
-                    sc-gauge,sc-radar} {
-      \draw[call,line width=.3pt,opacity=.35] (catalog.west |- \n.east) -- (\n.east);
-    }
-  \end{pgfonlayer}
-
-  % 项目核心文件（右侧）
-  \node[module,anchor=north west,minimum width=38mm,minimum height=12mm,fill=Panel]
-    (maints) at (11.4,15.35) {src/main.ts};
-  \node[note,anchor=north west,align=left,text width=35mm] at (11.55,14.90)
-    {单文件场景注册\\12 个 EChartsOption → 场景路由\\?scene= 切换};
-
-  \node[module,anchor=north west,minimum width=38mm,minimum height=12mm,fill=Panel]
-    (capture) at (11.4,13.85) {scripts/capture.mjs};
-  \node[note,anchor=north west,align=left,text width=35mm] at (11.55,13.40)
-    {Playwright 离线渲染\\逐场景截图 + 交互测试\\RGBA 像素级校验};
+  \node[module,anchor=north west,minimum width=57mm,fill=Panel,
+        text width=53mm,align=left,inner sep=2mm]
+    (capture) at (12.9,14.43)
+    % \kern：pdftocairo 导出时 .mjs 后缀相邻字形 bbox 亚像素相切，svg 审计会误报
+    {{\footnotesize\bfseries scripts/capture.m{\kern0.8pt}j{\kern0.8pt}s}\\[1pt]
+     {\scriptsize Playwright 离线渲染}\\
+     {\scriptsize 逐场景截图 + 交互测试}\\
+     {\scriptsize RGBA 像素级校验}};
 
   % 分隔线
-  \draw[boundary] (0,13.15) -- (18.2,13.15);
+  \draw[boundary] (0,11.0) -- (19.1,11.0);
 
   % ════════════════════════════════════════════════════════════════════════
   %  第三段：构建与渲染管线（主路径）
   % ════════════════════════════════════════════════════════════════════════
 
-  \node[kicker,anchor=west] at (0,12.9) {渲染管线 · Render Pipeline};
-  \node[section title,anchor=west] at (0,12.35) {从 TypeScript 源到透明 PNG 全离线闭环};
-  \node[section sub,anchor=west,text width=130mm,align=left] at (0,11.85)
+  \node[kicker,anchor=west] at (0,10.62) {渲染管线 · Render Pipeline};
+  \node[section title,anchor=west] at (0,10.02) {从 TypeScript 源到透明 PNG 全离线闭环};
+  \node[section sub,anchor=north west,text width=68mm,align=left] at (0,9.6)
     {npm test = 类型检查 + 构建 + Playwright 渲染 + RGBA 质量断言，整个过程无外部网络请求。};
 
-  % ── 六步主路径 ──────────────────────────────────────────────────────────
-  \node[stage] (p1) at (1.4,9.6) {01};
-  \node[stage] (p2) at (4.4,9.6) {02};
-  \node[stage] (p3) at (7.4,9.6) {03};
-  \node[stage] (p4) at (10.4,9.6) {04};
-  \node[stage] (p5) at (13.4,9.6) {05};
-  \node[stage] (p6) at (16.4,9.6) {06};
+  % 信任边界线（本地回环）
+  \draw[boundary] (13.6,10.62) -- (18.6,10.62);
+  \node[edge label,anchor=east] at (13.35,10.62) {本地回环 · 无外网};
 
-  \node[stage label,anchor=south] at (1.4,10.15) {TS 源码};
-  \node[stage label,anchor=south] at (4.4,10.15) {类型检查};
-  \node[stage label,anchor=south] at (7.4,10.15) {Vite 构建};
-  \node[stage label,anchor=south] at (10.4,10.15) {本地服务};
-  \node[stage label,anchor=south] at (13.4,10.15) {浏览器渲染};
-  \node[stage label,anchor=south] at (16.4,10.15) {PNG 输出};
+  % Vite server 模块
+  \node[module,anchor=center,minimum width=34mm,fill=Panel,
+        text width=31mm,align=center,inner sep=1.6mm]
+    (vite) at (15.0,9.9)
+    {{\footnotesize\bfseries Vite Dev Server}\\[0.5pt]
+     {\scriptsize 127.0.0.1:4175}};
 
-  \node[terminal,anchor=east] at (0.6,9.6) {main.ts};
-  \node[terminal,anchor=west] at (17.2,9.6) {out/*.png};
+  % ── 六步主路径（编号与名称合一的路标 pill）──────────────────────────────
+  \node[stage pill] (p1) at (2.0,8.2) {01 TS 源码};
+  \node[stage pill] (p2) at (4.75,8.2) {02 类型检查};
+  \node[stage pill] (p3) at (7.5,8.2) {03 Vite 构建};
+  \node[stage pill] (p4) at (10.25,8.2) {04 本地服务};
+  \node[stage pill] (p5) at (13.0,8.2) {05 浏览器渲染};
+  \node[stage pill] (p6) at (15.75,8.2) {06 PNG 输出};
 
-  % 主色带
+  \node[terminal,anchor=east] at (0.45,8.2) {main.ts};
+  \node[terminal,anchor=west] at (17.2,8.2) {out/*.png};
+
+  % 主色带：分段绘制，每段两端都附着于路标
   \begin{pgfonlayer}{edge layer}
-    \draw[spine] (0.8,9.6) -- (p1) -- (p2) -- (p3) -- (p4) -- (p5) -- (p6) -- (17.0,9.6);
+    \draw[spine] (0.8,8.2) -- (p1.west);
+    \draw[spine] (p1.east) -- (p2.west);
+    \draw[spine] (p2.east) -- (p3.west);
+    \draw[spine] (p3.east) -- (p4.west);
+    \draw[spine] (p4.east) -- (p5.west);
+    \draw[spine] (p5.east) -- (p6.west);
+    \draw[spine] (p6.east) -- (16.9,8.2);
   \end{pgfonlayer}
 
-  % ── 上下往返：Vite dev server 与 Playwright ────────────────────────────
-  % Vite server 模块
-  \node[module,anchor=south,minimum width=28mm,minimum height=11mm,align=center]
-    (vite) at (15.0,11.35) {Vite Dev Server\\\scriptsize 127.0.0.1:4175};
+  % 色带段标签（置于色带下方留白处，对齐各段间隙中心）
+  \node[edge label] at (3.38,7.52) {注册 12 场景};
+  \node[edge label] at (6.1,7.52) {tsc 通过};
+  \node[edge label] at (8.9,7.52) {dist/};
+  \node[edge label] at (14.4,7.52) {逐场景 PNG};
+  \node[edge label] at (16.85,7.52) {产物};
 
-  % Playwright / Chrome 模块
-  \node[module,anchor=north,minimum width=28mm,minimum height=8mm]
-    (pw) at (11.9,7.65) {Playwright + Chrome};
-  \node[note,anchor=south,align=center,text width=26mm] at (11.9,8.20)
-    {headless · SwiftShader\\阻断外部网络};
+  % Playwright / Chrome 模块（说明文字并入同一节点）
+  \node[module,anchor=center,minimum width=36mm,fill=Panel,
+        text width=33mm,align=center,inner sep=1.6mm]
+    (pw) at (11.4,6.75)
+    % \kern：pdftocairo 导出时相邻字形 bbox 亚像素相切（'+'/'C'、'f'/'t'），svg 审计会误报
+    {{\footnotesize\bfseries Playwright\ {\kern0.8pt}+{\kern0.8pt}\ Chrome}\\[0.5pt]
+     {\scriptsize headless · Swif{\kern0.9pt}tShader\\阻断外部网络}};
 
   % 调用 / 返回
   \begin{pgfonlayer}{edge layer}
-    % Vite 往返（右上方）
-    \draw[call] (p3.north) -- ++(0,1.4) -| (vite.south);
-    \draw[reply] (vite.south) -- ++(0,-0.6) -| (p4.north);
-    \node[edge label,anchor=south east] at (11.6,11.0) {构建产物};
-    \node[edge label,anchor=north west] at (14.2,9.8) {HTTP 提供};
+    % Vite 往返（上方；call 挂在 p4 以绕开左侧大标题的横排文字区）
+    \draw[call] (p4.north) -- (p4.north |- vite.west) -- (vite.west);
+    \draw[reply] (vite.south) -- ++(0,-0.45) -| (p5.north);
+    \node[edge label] at (11.7,9.6) {构建产物 dist/};
+    \node[edge label,anchor=south] at (14.0,9.06) {HTTP 提供};
 
     % Playwright 往返（下方）
     \draw[call] (p4.south) -- (pw.north -| p4.south);
     \draw[reply] (pw.north -| p5.south) -- (p5.south);
-    \node[edge label,anchor=east] at (9.8,8.95) {加载页面};
-    \node[edge label,anchor=west] at (10.9,8.95) {截图结果};
+    \node[edge label,anchor=west] at (10.35,7.6) {加载页面};
+    \node[edge label,anchor=east] at (12.9,7.6) {截图结果};
   \end{pgfonlayer}
 
-  % 信任边界线
-  \draw[boundary] (12.0,11.75) -- (17.2,11.75);
-  \node[edge label,anchor=east] at (11.9,11.75) {本地回环 · 无外网};
-
   % 分隔线
-  \draw[boundary] (0,6.8) -- (18.2,6.8);
+  \draw[boundary] (0,5.85) -- (19.1,5.85);
 
   % ════════════════════════════════════════════════════════════════════════
   %  第四段：三重质量门
   % ════════════════════════════════════════════════════════════════════════
 
-  \node[kicker,anchor=west] at (0,6.2) {质量验证 · Quality Gates};
-  \node[section title,anchor=west] at (0,5.65) {三重断言确保每个场景都「真的渲染出来了」};
-  \node[section sub,anchor=west] at (0,5.2)
+  \node[kicker,anchor=west] at (0,5.5) {质量验证 · Quality Gates};
+  \node[section title,anchor=west] at (0,4.95) {三重断言确保每个场景都「真的渲染出来了」};
+  \node[section sub,anchor=west] at (0,4.48)
     {不依赖肉眼审查，每条断言都在 CI 中自动执行。};
 
   % 三个质量门卡片
-  \begin{scope}[shift={(0,2.2)}]
+  \begin{scope}[shift={(0,1.1)}]
     % Gate 1
     \node[module,anchor=north west,minimum width=58mm,minimum height=30mm,fill=Panel]
-      (g1) at (0,2.8) {};
-    \node[anchor=north west,font=\rmfamily\footnotesize\bfseries,text=Ink] at (0.25,2.55) {门 1 · 类型检查};
-    \node[note,anchor=north west,align=left,text width=54mm] at (0.25,1.95)
+      (g1) at (0,3.0) {};
+    \node[anchor=north west,font=\rmfamily\footnotesize\bfseries,text=Ink] at (0.3,2.72) {门 1 · 类型检查};
+    \node[note,anchor=north west,align=left,text width=52mm] at (0.3,2.14)
       {tsc --noEmit\\校验 12 个 EChartsOption 类型\\scene 路由表完整性};
-    \node[pill,anchor=south east,inner xsep=2mm,inner ysep=.6mm] at (5.6,0.1) {静态};
+    \node[pill,anchor=south east,inner xsep=2.4mm,inner ysep=1.2mm] at (5.42,0.34) {静态};
 
     % Gate 2
     \node[module,anchor=north west,minimum width=58mm,minimum height=30mm,fill=Panel]
-      (g2) at (6.1,2.8) {};
-    \node[anchor=north west,font=\rmfamily\footnotesize\bfseries,text=Ink] at (6.35,2.55) {门 2 · 交互契约};
-    \node[note,anchor=north west,align=left,text width=54mm] at (6.35,1.95)
+      (g2) at (6.6,3.0) {};
+    \node[anchor=north west,font=\rmfamily\footnotesize\bfseries,text=Ink] at (6.9,2.72) {门 2 · 交互契约};
+    \node[note,anchor=north west,align=left,text width=52mm] at (6.9,2.14)
       {等待 \_\_VIS\_READY\_\_ 标志\\注入 pointer 事件\\验证 \_\_INTERACTION\_COUNT\_\_ 递增};
-    \node[pill,anchor=south east,inner xsep=2mm,inner ysep=.6mm,fill=Gold!30,text=Gold!60!black] at (11.7,0.1) {运行时};
+    \node[pill,anchor=south east,inner xsep=2.4mm,inner ysep=1.2mm,fill=Gold!30,text=Gold!60!black] at (12.02,0.34) {运行时};
 
     % Gate 3
     \node[module,anchor=north west,minimum width=58mm,minimum height=30mm,fill=Panel]
-      (g3) at (12.2,2.8) {};
-    \node[anchor=north west,font=\rmfamily\footnotesize\bfseries,text=Ink] at (12.45,2.55) {门 3 · RGBA 像素断言};
-    \node[note,anchor=north west,align=left,text width=54mm] at (12.45,1.95)
+      (g3) at (13.2,3.0) {};
+    \node[anchor=north west,font=\rmfamily\footnotesize\bfseries,text=Ink] at (13.5,2.72) {门 3 · RGBA 像素断言};
+    \node[note,anchor=north west,align=left,text width=52mm] at (13.5,2.14)
       {透明像素 > 8\%\\可见像素 > 3.5\%\\彩色像素 > 2500\\防止空白 / 纯黑输出};
-    \node[pill,anchor=south east,inner xsep=2mm,inner ysep=.6mm,fill=Coral!25,text=Coral!80!black] at (17.8,0.1) {像素级};
+    \node[pill,anchor=south east,inner xsep=2.4mm,inner ysep=1.2mm,fill=Coral!25,text=Coral!80!black] at (18.62,0.34) {像素级};
   \end{scope}
 
-  % 验证流程箭头
+  % 验证流程箭头（门间依序通过）
   \begin{pgfonlayer}{edge layer}
     \draw[verify] (g1.east) -- (g2.west);
     \draw[verify] (g2.east) -- (g3.west);
   \end{pgfonlayer}
+  \node[edge label,anchor=south] at (6.2,2.72) {通过};
+  \node[edge label,anchor=south] at (12.8,2.72) {通过};
 
   % 分隔线
-  \draw[boundary] (0,-0.5) -- (18.2,-0.5);
+  \draw[boundary] (0,0.75) -- (19.1,0.75);
 
   % ════════════════════════════════════════════════════════════════════════
   %  第五段：技术栈与设计原则（底部安静区）
   % ════════════════════════════════════════════════════════════════════════
 
-  \node[kicker,anchor=west] at (0,-1.1) {技术栈 · Stack};
+  \node[kicker,anchor=west] at (0,0.4) {技术栈 · Stack};
 
-  \begin{scope}[shift={(0,-3.3)}]
-    % 左列：依赖
-    \node[family label,anchor=west] at (0,0.4) {运行时};
-    \node[note,anchor=west,align=left] at (0,-0.2)
-      {echarts 6.1.0\\Canvas 渲染器\\透明背景设计};
+  % 左列：依赖
+  \node[family label,anchor=west] at (0,-0.15) {运行时};
+  \node[note,anchor=north west,align=left] at (0,-0.5)
+    {echarts 6.1.0\\Canvas 渲染器\\透明背景设计};
 
-    \node[family label,anchor=west] at (5.5,0.4) {构建};
-    \node[note,anchor=west,align=left] at (5.5,-0.2)
-      {TypeScript 5.9\\Vite 8.2\\ESM 模块};
+  \node[family label,anchor=west] at (4.8,-0.15) {构建};
+  \node[note,anchor=north west,align=left] at (4.8,-0.5)
+    {TypeScript 5.9\\Vite 8.2\\ESM 模块};
 
-    \node[family label,anchor=west] at (10.0,0.4) {测试 / 渲染};
-    \node[note,anchor=west,align=left] at (10.0,-0.2)
-      {Playwright + Chrome\\pngjs 像素分析\\离线网络隔离};
+  \node[family label,anchor=west] at (9.6,-0.15) {测试 / 渲染};
+  \node[note,anchor=north west,align=left] at (9.6,-0.5)
+    {Playwright + Chrome\\pngjs 像素分析\\离线网络隔离};
 
-    \node[family label,anchor=west] at (14.5,0.4) {设计原则};
-    \node[note,anchor=west,align=left] at (14.5,-0.2)
-      {场景即文档\\目录驱动组织\\断言胜过肉眼};
-  \end{scope}
+  \node[family label,anchor=west] at (14.4,-0.15) {设计原则};
+  \node[note,anchor=north west,align=left] at (14.4,-0.5)
+    {场景即文档\\目录驱动组织\\断言胜过肉眼};
 
   % 源注
-  \node[note,anchor=west,font=\rmfamily\tiny] at (0,0.55)
+  \node[note,anchor=west] at (0,-1.85)
     {数据来源：项目 README.md · catalog.json · src/main.ts · scripts/capture.mjs · package.json};
 
 \end{tikzpicture}

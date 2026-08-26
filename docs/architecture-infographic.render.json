@@ -1,213 +1,235 @@
 {
-  "id": "echarts-examples-architecture-infographic",
-  "project": "echarts-examples",
-  "project_path": "~/projects/plot/echarts-examples",
-  "type": "architecture-infographic",
-  "language": "zh-CN",
-  "thesis": "12 个高信息密度 ECharts 场景，通过 Vite + Playwright 的离线渲染管线与三重质量门，保证每个场景的视觉与交互质量。",
-  "renderer": {
-    "engine": "xelatex + tikz",
-    "tex_engine": "XeLaTeX",
-    "tex_version": "3.141592653-2.6-1.40.25 (TeX Live 2023)",
-    "tikz_libraries": ["arrows.meta", "backgrounds", "calc", "fit", "positioning"],
-    "fonts": {
-      "serif": "Source Han Serif SC",
-      "mono": "Sarasa Mono SC",
-      "CJK": "Source Han Serif SC"
+  "source": "/Users/junix/projects/plot/echarts-examples/docs/architecture-infographic.tex",
+  "workdir": "/Users/junix/projects/plot/echarts-examples",
+  "source_sha256": "336c2c466d09e9b8a1da625fa8722003f18e3501f3ef19afc01e4ab01f8d9ba7",
+  "engine": "xelatex",
+  "engine_version": "XeTeX 3.141592653-2.6-0.999995 (TeX Live 2023)",
+  "dpi": 300,
+  "passes": 2,
+  "transparent_png": false,
+  "shell_escape": false,
+  "warnings": [],
+  "geometry": {
+    "pdf": "/var/folders/6q/xkny9rm10gqbzhz7qd0mjp5r0000gn/T/tikz-render-535ozp2u/architecture-infographic.pdf",
+    "page_count": 1,
+    "expected_text": "echarts-examples",
+    "identity_match": true,
+    "thresholds": {
+      "min_text_pt": 6.5,
+      "min_width_occupancy": 0.45,
+      "min_height_occupancy": 0.3
     },
-    "build_command": "xelatex -interaction=nonstopmode architecture-infographic.tex",
-    "svg_converter": "pdftocairo -svg",
-    "png_converter": "pdftoppm -png -r 200"
+    "pages": [
+      {
+        "page": 1,
+        "width_pt": 607.5,
+        "height_pt": 886.79,
+        "line_count": 141,
+        "text_extent": {
+          "left": 17.447,
+          "top": 22.911,
+          "right": 568.985,
+          "bottom": 859.876
+        },
+        "width_occupancy": 0.9079,
+        "height_occupancy": 0.9438,
+        "overlap_count": 0,
+        "overlap_examples": [],
+        "tiny_text_count": 0,
+        "tiny_text_examples": []
+      }
+    ],
+    "issues": [],
+    "pass": true
   },
-  "narrative_sections": [
-    {
-      "id": "hero",
-      "title": "项目身份与核心主张",
-      "elements": ["kicker", "main_title", "subtitle", "version_pill", "metrics_5up"],
-      "metrics": [
-        {"label": "ECharts 场景", "value": "12", "detail": "按分析家族分组"},
-        {"label": "视觉家族", "value": "6", "detail": "流程/层次/网络/时间…"},
-        {"label": "每场景画布", "value": "1400×900", "detail": "透明 PNG 输出"},
-        {"label": "质量门", "value": "3 重", "detail": "类型 / 交互 / RGBA"},
-        {"label": "离线可测", "value": "100%", "detail": "无网络依赖"}
-      ]
+  "composition": {
+    "pdf": "/var/folders/6q/xkny9rm10gqbzhz7qd0mjp5r0000gn/T/tikz-render-535ozp2u/architecture-infographic.pdf",
+    "page": {
+      "width_pt": 607.5,
+      "height_pt": 886.79
     },
-    {
-      "id": "scene-catalog",
-      "title": "场景目录 · 12 个场景覆盖六大分析家族",
-      "visual_protagonist": true,
-      "families": [
-        {
-          "id": "flow",
-          "name": "流程与转化",
-          "scenes": [
-            {"id": "sankey", "name": "Sankey", "question": "可再生能源流向与耗散"},
-            {"id": "funnel", "name": "Funnel", "question": "科研招募人流失节点"}
-          ]
-        },
-        {
-          "id": "hierarchy",
-          "name": "层次与构成",
-          "scenes": [
-            {"id": "sunburst", "name": "Sunburst", "question": "研究组合三层分布"},
-            {"id": "treemap", "name": "Treemap", "question": "资产组合价值与风险"}
-          ]
-        },
-        {
-          "id": "network",
-          "name": "网络与图",
-          "scenes": [
-            {"id": "knowledge-graph", "name": "Knowledge Graph", "question": "气候知识图谱社区与桥接"}
-          ]
-        },
-        {
-          "id": "temporal",
-          "name": "时间与模式",
-          "scenes": [
-            {"id": "calendar", "name": "Calendar", "question": "运营异常全年日度强度"},
-            {"id": "river", "name": "Theme River", "question": "文化主题 1960–2031 演变"},
-            {"id": "candlestick", "name": "Candlestick", "question": "价格量波动微观结构"}
-          ]
-        },
-        {
-          "id": "multivariate",
-          "name": "多维与矩阵",
-          "scenes": [
-            {"id": "parallel", "name": "Parallel", "question": "远征五维野外条件"},
-            {"id": "heatmap", "name": "Heatmap", "question": "服务依赖调用频率×延迟"}
-          ]
-        },
-        {
-          "id": "monitoring",
-          "name": "监控与对比",
-          "scenes": [
-            {"id": "gauge-cluster", "name": "Gauge Cluster", "question": "系统健康仪表集群"},
-            {"id": "radar", "name": "Radar", "question": "航天器韧性三方案对比"}
-          ]
-        }
+    "counts": {
+      "blocks": 41,
+      "containers": 7,
+      "leaf_blocks": 34,
+      "connectors": 17,
+      "marks": 129,
+      "text_lines": 141,
+      "masked_labels": 0,
+      "ignored_text_regions": 0,
+      "ignored_text_blocks": 0,
+      "ignored_text_connectors": 0,
+      "ignored_presentation_fields": 0,
+      "ignored_label_backdrops": 0
+    },
+    "metrics": {
+      "connectors_per_leaf_block": 0.5,
+      "labelled_connector_ratio": 0.706,
+      "leaf_area_cv": 1.054,
+      "lattice_ratio": 0.412,
+      "container_depth": 2,
+      "min_clearance_pt": 41.46
+    },
+    "raster": {
+      "available": true,
+      "png": "/var/folders/6q/xkny9rm10gqbzhz7qd0mjp5r0000gn/T/tikz-render-535ozp2u/architecture-infographic.png",
+      "background_rgb": [
+        248,
+        248,
+        248
       ],
-      "supporting_modules": ["catalog.json", "src/main.ts", "scripts/capture.mjs"]
+      "ink_density": 0.1539,
+      "cell_density_cv": 0.9017,
+      "quiet_cell_fraction": 0.0833,
+      "cells": 36
     },
-    {
-      "id": "render-pipeline",
-      "title": "渲染管线 · 从 TypeScript 源到透明 PNG 全离线闭环",
-      "grammar": "spine + round trips",
-      "stages": [
-        {"id": "p1", "name": "TS 源码", "input": "main.ts"},
-        {"id": "p2", "name": "类型检查", "detail": "tsc --noEmit"},
-        {"id": "p3", "name": "Vite 构建", "detail": "vite build"},
-        {"id": "p4", "name": "本地服务", "detail": "127.0.0.1:4175"},
-        {"id": "p5", "name": "浏览器渲染", "detail": "Playwright + Chrome"},
-        {"id": "p6", "name": "PNG 输出", "output": "out/*.png"}
-      ],
-      "round_trips": [
-        {"from": "p3", "to": "Vite Dev Server", "call": "构建产物", "reply": "HTTP 提供"},
-        {"from": "p4", "to": "Playwright + Chrome", "call": "加载页面", "reply": "截图结果"}
-      ],
-      "boundary": "本地回环 · 无外网"
+    "thresholds": {
+      "clearance_pt": 2.0,
+      "label_radius_pt": 12.0,
+      "text_padding_pt": 1.5,
+      "min_block_area_pt2": 120.0,
+      "max_block_area_ratio": 0.55,
+      "min_connector_length_pt": 8.0,
+      "min_labeled_connector_ratio": 0.6,
+      "grid_min_blocks": 6,
+      "grid_area_cv": 0.12,
+      "grid_lattice_ratio": 0.75,
+      "max_container_depth": 2,
+      "max_ink_density": 0.38,
+      "min_quiet_cell_fraction": 0.08,
+      "min_cell_density_cv": 0.35
     },
-    {
-      "id": "quality-gates",
-      "title": "质量验证 · 三重断言确保每个场景都真的渲染出来了",
-      "gates": [
-        {
-          "id": "g1",
-          "name": "类型检查",
-          "kind": "静态",
-          "checks": ["tsc --noEmit", "校验 12 个 EChartsOption 类型", "scene 路由表完整性"]
-        },
-        {
-          "id": "g2",
-          "name": "交互契约",
-          "kind": "运行时",
-          "checks": ["等待 __VIS_READY__ 标志", "注入 pointer 事件", "验证 __INTERACTION_COUNT__ 递增"]
-        },
-        {
-          "id": "g3",
-          "name": "RGBA 像素断言",
-          "kind": "像素级",
-          "checks": ["透明像素 > 8%", "可见像素 > 3.5%", "彩色像素 > 2500", "防止空白 / 纯黑输出"]
-        }
-      ]
-    },
-    {
-      "id": "tech-stack",
-      "title": "技术栈",
-      "columns": [
-        {"name": "运行时", "items": ["echarts 6.1.0", "Canvas 渲染器", "透明背景设计"]},
-        {"name": "构建", "items": ["TypeScript 5.9", "Vite 8.2", "ESM 模块"]},
-        {"name": "测试 / 渲染", "items": ["Playwright + Chrome", "pngjs 像素分析", "离线网络隔离"]},
-        {"name": "设计原则", "items": ["场景即文档", "目录驱动组织", "断言胜过肉眼"]}
-      ]
-    }
-  ],
-  "palette": {
-    "paper": "#F7F4EE",
-    "ink": "#0F1B2A",
-    "slate": "#4F6378",
-    "fog": "#CFDBE5",
-    "deep": "#142744",
-    "ocean": "#2E6B8A",
-    "teal": "#2FA496",
-    "mint": "#D6EEE9",
-    "coral": "#E2667B",
-    "gold": "#E8B94F",
-    "violet": "#8A7CC9",
-    "sky": "#5E8FD6"
+    "violations": [],
+    "issues": [],
+    "notes": [],
+    "pass": true
   },
-  "sources": [
-    "README.md",
-    "catalog.json",
-    "package.json",
-    "src/main.ts",
-    "scripts/capture.mjs",
-    "index.html",
-    "tsconfig.json"
-  ],
-  "outputs": {
-    "tex": {
-      "path": "docs/architecture-infographic.tex",
-      "size_bytes": 29046,
-      "sha256_16": "22bf32c6e06dbd53",
-      "role": "editable_source"
+  "svg_lint": {
+    "tool": "svg-linter 0.1.0",
+    "input_sha256": "38327b34b152af7c75d708167efc251cfb6f258ab1243ae75f81fe223b085754",
+    "catalog": {
+      "schema_version": "svg-linter.catalog/v1",
+      "catalog_version": "3",
+      "catalog_hash": "sha256:9079749fd5985a8f505c2a96c7d7dd90a990fb73f9f295c12620f63c338ac333"
     },
+    "passes": {
+      "error_gate": {
+        "select": [
+          "svg/duplicate-id",
+          "svg/dangling-reference"
+        ],
+        "coverage": {
+          "evaluated": [
+            "svg/dangling-reference",
+            "svg/duplicate-id"
+          ],
+          "not_evaluated": {}
+        },
+        "counts": {},
+        "errors": 0,
+        "total": 0,
+        "viz": null
+      },
+      "hygiene_review": {
+        "select": [
+          "svg/excessive-path-complexity",
+          "svg/unused-definition",
+          "svg/external-resource",
+          "svg/raster-upscale",
+          "svg/open-filled-path"
+        ],
+        "coverage": {
+          "evaluated": [
+            "svg/excessive-path-complexity",
+            "svg/external-resource",
+            "svg/open-filled-path",
+            "svg/raster-upscale",
+            "svg/unused-definition"
+          ],
+          "not_evaluated": {}
+        },
+        "counts": {},
+        "errors": 0,
+        "total": 0,
+        "viz": null
+      },
+      "collision_review": {
+        "select": [
+          "svg/line-overlap",
+          "svg/line-crossing",
+          "svg/line-text-overlap",
+          "svg/text-text-overlap",
+          "svg/canvas-edge-clearance",
+          "svg/ambiguous-junction",
+          "svg/connector-through-shape",
+          "svg/edge-congestion",
+          "svg/filter-clipping-risk",
+          "svg/low-contrast-text"
+        ],
+        "coverage": {
+          "evaluated": [
+            "svg/ambiguous-junction",
+            "svg/canvas-edge-clearance",
+            "svg/connector-through-shape",
+            "svg/edge-congestion",
+            "svg/filter-clipping-risk",
+            "svg/line-crossing",
+            "svg/line-overlap",
+            "svg/line-text-overlap",
+            "svg/low-contrast-text",
+            "svg/text-text-overlap"
+          ],
+          "not_evaluated": {}
+        },
+        "counts": {},
+        "errors": 0,
+        "total": 0,
+        "viz": "/Users/junix/projects/plot/echarts-examples/docs/architecture-infographic.collision-review.png"
+      }
+    },
+    "path_font_quarantine": [
+      "svg/out-of-bounds",
+      "svg/path-self-crossing",
+      "svg/exact-duplicate-geometry",
+      "svg/outlined-text",
+      "svg/dangling-connector",
+      "svg/marker-overlap",
+      "svg/text-container-overflow",
+      "svg/text-edge-clearance",
+      "svg/shape-shape-overlap",
+      "svg/text-shape-overlap",
+      "svg/tiny-dogleg",
+      "svg/acute-connector-bend",
+      "svg/excessive-bends",
+      "svg/alignment-outlier",
+      "svg/spacing-outlier",
+      "svg/size-outlier",
+      "svg/container-padding-outlier",
+      "svg/font-style-outlier"
+    ],
+    "error_gate_clean": true,
+    "collision_findings": 0
+  },
+  "published_despite_strict_failure": false,
+  "artifacts": {
     "pdf": {
-      "path": "docs/architecture-infographic.pdf",
-      "size_bytes": 119386,
-      "sha256_16": "4f3e9b0ee61fea40",
-      "role": "vector_final",
-      "page_count": 1,
-      "size_pt": {"width": 558.66, "height": 883.03}
-    },
-    "svg": {
-      "path": "docs/architecture-infographic.svg",
-      "size_bytes": 1090593,
-      "sha256_16": "ee7f5f8fad136bac",
-      "role": "vector_web",
-      "converter": "poppler pdftocairo"
+      "path": "/Users/junix/projects/plot/echarts-examples/docs/architecture-infographic.pdf",
+      "bytes": 124960
     },
     "png": {
-      "path": "docs/architecture-infographic.png",
-      "size_bytes": 555405,
-      "sha256_16": "d332dde8f926e4b8",
-      "role": "raster_preview",
-      "dpi": 200,
-      "width_px": 1585,
-      "height_px": 2510,
-      "mode": "RGB"
+      "path": "/Users/junix/projects/plot/echarts-examples/docs/architecture-infographic.png",
+      "bytes": 1029958,
+      "width_px": 2532,
+      "height_px": 3695,
+      "width_to_height": 0.6853
+    },
+    "svg": {
+      "path": "/Users/junix/projects/plot/echarts-examples/docs/architecture-infographic.svg",
+      "bytes": 1110925
+    },
+    "svg_lint_viz": {
+      "path": "/Users/junix/projects/plot/echarts-examples/docs/architecture-infographic.collision-review.png",
+      "bytes": 167050
     }
-  },
-  "verification": {
-    "compile_clean": true,
-    "no_missing_glyphs": true,
-    "no_text_overflow_issues": "mostly_clean_minor_label_overlap_acceptable",
-    "cjk_glyphs_present": true,
-    "all_12_scenes_represented": true,
-    "pipeline_stages_complete": true,
-    "quality_gates_documented": true,
-    "sources_cited": true
-  },
-  "created": "2026-08-24",
-  "skill": "create-infographic",
-  "backend": "tikz_xelatex"
+  }
 }
