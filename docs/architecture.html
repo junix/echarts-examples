@@ -1,0 +1,572 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ECharts Examples · 架构文档</title>
+<style>
+  :root{
+    --bg:#f8fafc;
+    --ink:#0f172a;
+    --muted:#475569;
+    --line:#e2e8f0;
+    --accent:#0ea5e9;
+    --accent2:#10b981;
+    --accent3:#f59e0b;
+    --accent4:#8b5cf6;
+    --accent5:#ef4444;
+    --card:#ffffff;
+    --shadow:0 1px 3px rgba(15,23,42,.06),0 4px 12px rgba(15,23,42,.04);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;line-height:1.7;font-size:16px}
+  .wrap{max-width:960px;margin:0 auto;padding:48px 32px 96px}
+  h1{font-size:34px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px}
+  .subtitle{color:var(--muted);font-size:17px;margin-bottom:36px}
+  h2{font-size:24px;font-weight:700;margin:56px 0 16px;border-left:4px solid var(--accent);padding-left:12px}
+  h3{font-size:18px;font-weight:600;margin:24px 0 10px;color:var(--ink)}
+  p{color:var(--muted);margin-bottom:12px}
+  p strong{color:var(--ink);font-weight:600}
+  .tagline{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:20px 24px;margin:16px 0 32px;box-shadow:var(--shadow)}
+  .tagline p{color:var(--ink);font-size:17px;margin:0}
+
+  /* feature grid */
+  .features{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin:20px 0}
+  .feat{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow)}
+  .feat b{display:block;font-size:15px;color:var(--ink);margin-bottom:4px}
+  .feat span{font-size:14px;color:var(--muted)}
+  .feat .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:8px;vertical-align:middle}
+
+  /* diagram container */
+  .diagram{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:28px 24px;margin:20px 0 8px;box-shadow:var(--shadow);overflow:hidden;position:relative}
+  .diagram svg{width:100%;height:auto;display:block}
+  .diagram-caption{font-size:13px;color:var(--muted);text-align:center;margin-top:10px;font-style:italic}
+
+  /* walkthrough steps */
+  .steps{margin:20px 0;counter-reset:step}
+  .step{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px 16px 64px;position:relative;margin-bottom:10px;box-shadow:var(--shadow)}
+  .step::before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:16px;width:32px;height:32px;border-radius:50%;background:var(--accent);color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center}
+  .step b{display:block;color:var(--ink);font-size:15px;margin-bottom:4px}
+  .step p{font-size:14px;color:var(--muted);margin:0}
+
+  /* layers list */
+  .layer-list{margin:16px 0}
+  .layer{display:flex;gap:16px;align-items:flex-start;padding:14px 16px;background:var(--card);border:1px solid var(--line);border-radius:10px;margin-bottom:8px;box-shadow:var(--shadow)}
+  .layer .badge{flex-shrink:0;font-size:12px;font-weight:600;padding:3px 10px;border-radius:20px;background:#ecfeff;color:#0e7490;margin-top:2px}
+  .layer .content b{display:block;color:var(--ink);font-size:15px;margin-bottom:2px}
+  .layer .content span{font-size:14px;color:var(--muted)}
+
+  /* glossary */
+  .glossary{background:#f0f9ff;border:1px solid #bae6fd;border-radius:10px;padding:16px 20px;margin:16px 0}
+  .glossary dt{font-weight:600;color:#0c4a6e;font-size:14px}
+  .glossary dd{font-size:14px;color:#0369a1;margin-bottom:6px;margin-left:0}
+  .glossary dd:last-child{margin-bottom:0}
+
+  /* data flow table */
+  .flow-table{width:100%;border-collapse:collapse;margin:16px 0;font-size:14px}
+  .flow-table th,.flow-table td{padding:10px 14px;text-align:left;border-bottom:1px solid var(--line)}
+  .flow-table th{background:#f1f5f9;color:var(--ink);font-weight:600;font-size:13px}
+  .flow-table td{color:var(--muted)}
+
+  .footer{margin-top:64px;padding-top:24px;border-top:1px solid var(--line);font-size:13px;color:var(--muted);text-align:center}
+
+  /* prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce){
+    .anim-node,.anim-link,.anim-flow{animation:none!important;stroke-dashoffset:0!important}
+  }
+
+  /* print */
+  @media print{
+    body{background:#fff}
+    .wrap{padding:0;max-width:none}
+    h2{page-break-after:avoid}
+    .diagram,.feat,.step,.layer,.tagline,.glossary{box-shadow:none;break-inside:avoid}
+    .anim-node,.anim-link,.anim-flow{animation:none!important;stroke-dashoffset:0!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>ECharts Examples 架构文档</h1>
+  <p class="subtitle">十二组精致的信息密度型 ECharts 可视化场景，带离线实机浏览器验证闭环</p>
+
+  <div class="tagline">
+    <p>本项目是一组透明背景的 ECharts 可视化场景集合。每个场景独立成图，通过 URL 参数 <code>?scene=</code> 切换，由 Playwright 在无头 Chromium 中逐屏导出 PNG 并做像素级质量校验。构建、渲染、验证三段式结构，确保每幅图都有真实内容且交互可用。</p>
+  </div>
+
+  <h2>术语速览</h2>
+  <dl class="glossary">
+    <dt>Scene（场景）</dt>
+    <dd>一幅独立的 ECharts 图，由 id 标识，如 sankey、sunburst、knowledge-graph 等，共 12 个。</dd>
+    <dt>Catalog（目录）</dt>
+    <dd>catalog.json 中记录每个场景的分析用途、所属图族、复杂度与标签的元数据清单。</dd>
+    <dt>Stage（舞台）</dt>
+    <dd>页面中承载 ECharts 画布的 1400×900 透明 DOM 容器，id 为 stage。</dd>
+    <dt>VIS_READY</dt>
+    <dd>window.__VIS_READY__ 标志位，场景首帧渲染完成后置 true，供测试脚本等待。</dd>
+    <dt>Interaction Contract（交互契约）</dt>
+    <dd>指针移动或按下会递增 window.__INTERACTION_COUNT__，验证脚本借此确认图面可交互。</dd>
+    <dt>RGBA 质量断言</dt>
+    <dd>pngjs 逐像素扫描导出图，校验透明像素占比、可见像素占比与彩色像素数量，拒绝空白或单色输出。</dd>
+  </dl>
+
+  <h2>核心特性</h2>
+  <div class="features">
+    <div class="feat"><b><span class="dot" style="background:var(--accent)"></span>十二类图族全覆盖</b><span>流、层次、多维、网络、矩阵、时序、金融、仪表、漏斗……覆盖 ECharts 主要系列类型。</span></div>
+    <div class="feat"><b><span class="dot" style="background:var(--accent2)"></span>透明呈现层</b><span>背景全透明导出，便于嵌入任意设计系统、幻灯片或仪表盘底板。</span></div>
+    <div class="feat"><b><span class="dot" style="background:var(--accent3)"></span>离线实机验证</b><span>Playwright 驱动本地 Chromium 无头渲染，不依赖在线服务与截图服务。</span></div>
+    <div class="feat"><b><span class="dot" style="background:var(--accent4)"></span>像素级质量门</b><span>pngjs 逐像素校验透明占比、可见占比与彩色像素数，防止空白或损坏输出。</span></div>
+    <div class="feat"><b><span class="dot" style="background:var(--accent5)"></span>交互契约保证</b><span>每个场景监听指针事件并计数，测试脚本模拟移动后断言计数增长。</span></div>
+    <div class="feat"><b><span class="dot" style="background:var(--accent)"></span>零外部请求</b><span>Playwright 路由拦截非本地请求，确保构建与渲染完全离线可重复。</span></div>
+  </div>
+
+  <h2>一、系统分层架构</h2>
+
+  <div class="diagram" id="diagram-layers">
+    <svg viewBox="0 0 800 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="五层架构图：目录层、场景层、渲染层、构建层、验证层">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="0">
+          <stop offset="0%" stop-color="#0ea5e9" stop-opacity=".12"/>
+          <stop offset="100%" stop-color="#0ea5e9" stop-opacity=".02"/>
+        </linearGradient>
+      </defs>
+
+      <!-- layer 5: validation -->
+      <rect class="anim-node" x="40" y="20" width="720" height="52" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5" style="opacity:0;animation:fadeIn .6s ease forwards .2s"/>
+      <text x="64" y="44" font-size="14" font-weight="700" fill="#92400e">验证层</text>
+      <text x="150" y="44" font-size="13" fill="#78350f">Playwright · pngjs · 交互契约 · RGBA 质量门</text>
+      <text x="720" y="44" font-size="12" fill="#b45309" text-anchor="end">out/*.png</text>
+
+      <!-- layer 4: build -->
+      <rect class="anim-node" x="40" y="88" width="720" height="52" rx="10" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1.5" style="opacity:0;animation:fadeIn .6s ease forwards .4s"/>
+      <text x="64" y="112" font-size="14" font-weight="700" fill="#5b21b6">构建层</text>
+      <text x="150" y="112" font-size="13" fill="#4c1d95">Vite · TypeScript · ECharts 6.1</text>
+      <text x="720" y="112" font-size="12" fill="#6d28d9" text-anchor="end">dist/assets/</text>
+
+      <!-- layer 3: render -->
+      <rect class="anim-node" x="40" y="156" width="720" height="52" rx="10" fill="#dcfce7" stroke="#10b981" stroke-width="1.5" style="opacity:0;animation:fadeIn .6s ease forwards .6s"/>
+      <text x="64" y="180" font-size="14" font-weight="700" fill="#065f46">渲染层</text>
+      <text x="150" y="180" font-size="13" fill="#064e3b">ECharts Canvas 渲染器 · 透明背景 · 1400×900 Stage</text>
+      <text x="720" y="180" font-size="12" fill="#047857" text-anchor="end">#stage</text>
+
+      <!-- layer 2: scenes -->
+      <rect class="anim-node" x="40" y="224" width="720" height="52" rx="10" fill="#dbeafe" stroke="#0ea5e9" stroke-width="1.5" style="opacity:0;animation:fadeIn .6s ease forwards .8s"/>
+      <text x="64" y="248" font-size="14" font-weight="700" fill="#075985">场景层</text>
+      <text x="150" y="248" font-size="13" fill="#0c4a6e">12 组 EChartsOption · Sankey / Sunburst / Graph / Treemap / Heatmap / River …</text>
+      <text x="720" y="248" font-size="12" fill="#0369a1" text-anchor="end">options{}</text>
+
+      <!-- layer 1: catalog -->
+      <rect class="anim-node" x="40" y="292" width="720" height="52" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5" style="opacity:0;animation:fadeIn .6s ease forwards 1s"/>
+      <text x="64" y="316" font-size="14" font-weight="700" fill="#334155">目录层</text>
+      <text x="150" y="316" font-size="13" fill="#1e293b">catalog.json · id / use / family / question / complexity / tags</text>
+      <text x="720" y="316" font-size="12" fill="#475569" text-anchor="end">catalog.json</text>
+
+      <!-- connecting arrows -->
+      <g stroke="#94a3b8" stroke-width="1.5" fill="none" stroke-dasharray="4 4" class="anim-flow" style="stroke-dashoffset:200;animation:dash 1.2s ease-in-out forwards 1.2s">
+        <path d="M400 72 L400 88"/>
+        <path d="M400 140 L400 156"/>
+        <path d="M400 208 L400 224"/>
+        <path d="M400 276 L400 292"/>
+        <polygon points="395,88 405,88 400,94" fill="#94a3b8"/>
+        <polygon points="395,156 405,156 400,162" fill="#94a3b8"/>
+        <polygon points="395,224 405,224 400,230" fill="#94a3b8"/>
+        <polygon points="395,292 405,292 400,298" fill="#94a3b8"/>
+      </g>
+    </svg>
+    <p class="diagram-caption">图 1 · 五层架构自底向上：目录定义场景元数据 → 场景声明图配置 → 渲染层输出画布 → 构建层打包 → 验证层闭环</p>
+  </div>
+
+  <p>整个系统由五层组成，自底向上分别是<strong>目录层、场景层、渲染层、构建层、验证层</strong>。每一层只依赖紧邻的下层，形成清晰的单向依赖链。</p>
+
+  <div class="layer-list">
+    <div class="layer">
+      <span class="badge">L1 目录</span>
+      <div class="content">
+        <b>catalog.json — 场景元数据清单</b>
+        <span>12 条记录，每条含 id、分析用途 use、图族 family、分析问题 question、复杂度 complexity 与标签 tags。它是验证脚本的遍历来源，也是文档索引的唯一真相源。</span>
+      </div>
+    </div>
+    <div class="layer">
+      <span class="badge">L2 场景</span>
+      <div class="content">
+        <b>12 组 EChartsOption 配置对象</b>
+        <span>在 main.ts 中以对象字面量形式定义，包括 sankey（能流）、sunburst（科研层次）、parallel（科考多维剖面）、knowledge-graph（气候知识图谱力导向）、treemap（产品组合风险）、calendar（运营异常日历）、candlestick（量价波动）、radar（航天器韧性对比）、heatmap（服务依赖热力）、gauge-cluster（系统健康仪表盘）、funnel（招聘漏斗）、river（文化主题河流）。共用一套 base 配置（透明背景、统一调色板、标题样式），各自差异化 series。</span>
+      </div>
+    </div>
+    <div class="layer">
+      <span class="badge">L3 渲染</span>
+      <div class="content">
+        <b>ECharts Canvas 渲染器 + Stage 容器</b>
+        <span>1400×900 像素的透明画布，固定尺寸便于像素级比对。渲染完成后设置 window.__VIS_READY__ 标志，并在指针事件中递增 __INTERACTION_COUNT__，构成可被测试脚本观测的对外契约。</span>
+      </div>
+    </div>
+    <div class="layer">
+      <span class="badge">L4 构建</span>
+      <div class="content">
+        <b>Vite + TypeScript → dist/</b>
+        <span>TypeScript 严格模式（strict），ES2022 目标，Bundler 模块解析。Vite 既做开发服务器，也生产打包。渲染时由 capture.mjs 以编程方式拉起 Vite 本地服务。</span>
+      </div>
+    </div>
+    <div class="layer">
+      <span class="badge">L5 验证</span>
+      <div class="content">
+        <b>Playwright + pngjs 双保险</b>
+        <span>无头 Chromium 逐场景加载 → 等 VIS_READY → 透明背景截图 → 模拟指针移动校验交互计数 → pngjs 像素扫描（透明占比 &gt;8%、可见占比 &gt;3.5%、彩色像素 &gt;2500）。任一条件不满足即报错退出。</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>二、场景族分类</h2>
+
+  <div class="diagram" id="diagram-families">
+    <svg viewBox="0 0 800 440" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="12个场景按图族分布的分类图">
+      <!-- center hub -->
+      <circle cx="400" cy="220" r="42" fill="#0ea5e9" class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards"/>
+      <text x="400" y="216" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">ECharts</text>
+      <text x="400" y="232" text-anchor="middle" font-size="11" fill="#e0f2fe">12 Scenes</text>
+
+      <!-- 6 family nodes around -->
+      <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .2s">
+        <rect x="60" y="40" width="170" height="64" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="76" y="64" font-size="13" font-weight="700" fill="#92400e">流 / Flow</text>
+        <text x="76" y="84" font-size="12" fill="#78350f">Sankey · 能源流向</text>
+      </g>
+      <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .3s">
+        <rect x="315" y="20" width="170" height="64" rx="10" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="331" y="44" font-size="13" font-weight="700" fill="#5b21b6">层次 / Hierarchy</text>
+        <text x="331" y="64" font-size="12" fill="#4c1d95">Sunburst · Treemap</text>
+      </g>
+      <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .4s">
+        <rect x="570" y="40" width="170" height="64" rx="10" fill="#dbeafe" stroke="#0ea5e9" stroke-width="1.5"/>
+        <text x="586" y="64" font-size="13" font-weight="700" fill="#075985">多维 / Multivariate</text>
+        <text x="586" y="84" font-size="12" fill="#0c4a6e">Parallel · Radar</text>
+      </g>
+      <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .5s">
+        <rect x="60" y="336" width="170" height="64" rx="10" fill="#dcfce7" stroke="#10b981" stroke-width="1.5"/>
+        <text x="76" y="360" font-size="13" font-weight="700" fill="#065f46">网络 / Network</text>
+        <text x="76" y="380" font-size="12" fill="#064e3b">Knowledge Graph</text>
+      </g>
+      <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .6s">
+        <rect x="315" y="356" width="170" height="64" rx="10" fill="#fce7f3" stroke="#ec4899" stroke-width="1.5"/>
+        <text x="331" y="380" font-size="13" font-weight="700" fill="#9d174d">时序 / Temporal</text>
+        <text x="331" y="400" font-size="12" fill="#831843">Calendar · Theme River</text>
+      </g>
+      <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .7s">
+        <rect x="570" y="336" width="170" height="64" rx="10" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
+        <text x="586" y="360" font-size="13" font-weight="700" fill="#991b1b">矩阵 / 指标 / 过程</text>
+        <text x="586" y="380" font-size="12" fill="#7f1d1d">Heatmap · Gauges · Funnel · Candlestick</text>
+      </g>
+
+      <!-- links from hub to families -->
+      <g stroke="#cbd5e1" stroke-width="1.5" fill="none" class="anim-link" style="stroke-dasharray:300;stroke-dashoffset:300;animation:drawLine .6s ease forwards .8s">
+        <line x1="372" y1="200" x2="145" y2="104"/>
+        <line x1="400" y1="178" x2="400" y2="84"/>
+        <line x1="428" y1="200" x2="655" y2="104"/>
+        <line x1="372" y1="240" x2="145" y2="336"/>
+        <line x1="400" y1="262" x2="400" y2="356"/>
+        <line x1="428" y1="240" x2="655" y2="336"/>
+      </g>
+
+      <!-- scene dots per family -->
+      <g fill="#fbbf24" class="anim-node" style="opacity:0;animation:fadeIn .5s ease forwards 1.2s">
+        <circle cx="180" cy="86" r="4"/><circle cx="195" cy="86" r="4"/>
+      </g>
+      <g fill="#a78bfa" class="anim-node" style="opacity:0;animation:fadeIn .5s ease forwards 1.3s">
+        <circle cx="440" cy="66" r="4"/><circle cx="455" cy="66" r="4"/>
+      </g>
+      <g fill="#38bdf8" class="anim-node" style="opacity:0;animation:fadeIn .5s ease forwards 1.4s">
+        <circle cx="700" cy="86" r="4"/><circle cx="715" cy="86" r="4"/>
+      </g>
+      <g fill="#34d399" class="anim-node" style="opacity:0;animation:fadeIn .5s ease forwards 1.5s">
+        <circle cx="180" cy="382" r="4"/>
+      </g>
+      <g fill="#f472b6" class="anim-node" style="opacity:0;animation:fadeIn .5s ease forwards 1.6s">
+        <circle cx="440" cy="402" r="4"/><circle cx="455" cy="402" r="4"/>
+      </g>
+      <g fill="#f87171" class="anim-node" style="opacity:0;animation:fadeIn .5s ease forwards 1.7s">
+        <circle cx="700" cy="382" r="4"/><circle cx="715" cy="382" r="4"/><circle cx="730" cy="382" r="4"/>
+      </g>
+    </svg>
+    <p class="diagram-caption">图 2 · 12 个场景按六大图族分类，每个图族对应不同的分析问题与可视化形态</p>
+  </div>
+
+  <p>场景层并非一组零散的图，而是按<strong>分析问题的类型</strong>组织成六大图族。同一族内的场景共享相似的视觉语言（调色板、标题风格、透明呈现），但各自解决不同领域的问题——从能源流向到科研组合，从运营异常到文化主题变迁。</p>
+
+  <table class="flow-table">
+    <thead>
+      <tr><th>图族</th><th>场景 ID</th><th>分析问题举例</th><th>核心系列</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>流 / Flow</td><td>sankey</td><td>可再生能源如何流向存储与需求侧？</td><td>series.sankey</td></tr>
+      <tr><td>层次 / Hierarchy</td><td>sunburst, treemap</td><td>科研组合/产品组合如何分布与集中？</td><td>series.sunburst, series.treemap</td></tr>
+      <tr><td>多维 / Multivariate</td><td>parallel, radar</td><td>科考剖面/航天器子系统如何多维对比？</td><td>series.parallel, series.radar</td></tr>
+      <tr><td>网络 / Network</td><td>knowledge-graph</td><td>气候知识图谱中哪些观念桥接社区？</td><td>series.graph (force)</td></tr>
+      <tr><td>时序 / Temporal</td><td>calendar, river</td><td>运营异常何时聚集？文化主题如何兴衰？</td><td>series.heatmap+calendar, series.themeRiver</td></tr>
+      <tr><td>矩阵/指标/过程</td><td>heatmap, gauge-cluster, funnel, candlestick</td><td>依赖压力、健康仪表、转化漏斗、量价结构</td><td>series.heatmap/gauge/funnel/candlestick+bar</td></tr>
+    </tbody>
+  </table>
+
+  <h2>三、主走查：场景导出验证</h2>
+
+  <p>以下选取「<strong>场景导出验证</strong>」这条端到端路径，展示从触发命令到产出验证通过的 PNG 文件之间，各模块如何协作。</p>
+
+  <div class="diagram" id="diagram-walkthrough">
+    <svg viewBox="0 0 800 360" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="场景导出验证五步走查流程图">
+      <!-- step boxes -->
+      <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .1s">
+        <rect x="30" y="40" width="130" height="72" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
+        <text x="95" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">① 读取目录</text>
+        <text x="95" y="90" text-anchor="middle" font-size="11" fill="#475569">catalog.json</text>
+        <text x="95" y="104" text-anchor="middle" font-size="11" fill="#64748b">12 scenes</text>
+      </g>
+
+      <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .3s">
+        <rect x="200" y="40" width="130" height="72" rx="10" fill="#dbeafe" stroke="#0ea5e9" stroke-width="1.5"/>
+        <text x="265" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#075985">② 构建+起服</text>
+        <text x="265" y="90" text-anchor="middle" font-size="11" fill="#0c4a6e">Vite build</text>
+        <text x="265" y="104" text-anchor="middle" font-size="11" fill:#0369a1>127.0.0.1:PORT</text>
+      </g>
+
+      <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .5s">
+        <rect x="370" y="40" width="130" height="72" rx="10" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1.5"/>
+        <text x="435" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">③ 加载场景</text>
+        <text x="435" y="90" text-anchor="middle" font-size="11" fill="#4c1d95">Playwright</text>
+        <text x="435" y="104" text-anchor="middle" font-size="11" fill="#6d28d9">wait VIS_READY</text>
+      </g>
+
+      <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .7s">
+        <rect x="540" y="40" width="130" height="72" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
+        <text x="605" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">④ 交互+截图</text>
+        <text x="605" y="90" text-anchor="middle" font-size="11" fill="#78350f">pointer move</text>
+        <text x="605" y="104" text-anchor="middle" font-size="11" fill="#b45309">omitBackground</text>
+      </g>
+
+      <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .9s">
+        <rect x="640" y="220" width="130" height="72" rx="10" fill="#dcfce7" stroke="#10b981" stroke-width="1.5"/>
+        <text x="705" y="250" text-anchor="middle" font-size="13" font-weight="700" fill="#065f46">⑤ 像素校验</text>
+        <text x="705" y="270" text-anchor="middle" font-size="11" fill="#064e3b">pngjs RGBA</text>
+        <text x="705" y="284" text-anchor="middle" font-size="11" fill="#047857">out/*.png</text>
+      </g>
+
+      <!-- flow arrows -->
+      <g fill="none" stroke="#94a3b8" stroke-width="2" class="anim-flow" style="stroke-dasharray:400;stroke-dashoffset:400">
+        <path d="M160 76 L200 76" style="animation:drawLine .3s ease forwards 1.1s"/>
+        <path d="M330 76 L370 76" style="animation:drawLine .3s ease forwards 1.2s"/>
+        <path d="M500 76 L540 76" style="animation:drawLine .3s ease forwards 1.3s"/>
+        <path d="M605 112 L605 180 L705 180 L705 220" style="animation:drawLine .6s ease forwards 1.4s"/>
+      </g>
+
+      <!-- arrow heads -->
+      <g fill="#94a3b8" class="anim-node" style="opacity:0;animation:fadeIn .2s ease forwards 1.1s">
+        <polygon points="196,72 200,76 196,80"/>
+      </g>
+      <g fill="#94a3b8" class="anim-node" style="opacity:0;animation:fadeIn .2s ease forwards 1.2s">
+        <polygon points="366,72 370,76 366,80"/>
+      </g>
+      <g fill="#94a3b8" class="anim-node" style="opacity:0;animation:fadeIn .2s ease forwards 1.3s">
+        <polygon points="536,72 540,76 536,80"/>
+      </g>
+      <g fill="#94a3b8" class="anim-node" style="opacity:0;animation:fadeIn .2s ease forwards 1.6s">
+        <polygon points="701,216 705,220 709,216"/>
+      </g>
+
+      <!-- loop back arrow from step 5 to step 3 (next scene) -->
+      <path d="M640 256 C 560 320, 240 320, 200 256 L 200 112" fill="none" stroke="#10b981" stroke-width="1.5" stroke-dasharray="6 4" class="anim-flow" style="stroke-dasharray:300;stroke-dashoffset:300;animation:drawLine 1s ease forwards 1.7s"/>
+      <text x="420" y="340" text-anchor="middle" font-size="12" fill="#047857" class="anim-node" style="opacity:0;animation:fadeIn .4s ease forwards 2.2s">逐场景循环（×12）</text>
+    </svg>
+    <p class="diagram-caption">图 3 · 主走查「场景导出验证」五步流程 + 逐场景循环</p>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <b>读取目录清单</b>
+      <p>capture.mjs 启动后读取 catalog.json，解析出 12 个场景 id。校验条目数不少于 12，缺失即抛错——防止目录被意外截断后静默通过测试。</p>
+    </div>
+    <div class="step">
+      <b>构建并启动 Vite 服务</b>
+      <p>先执行 vite build 生产打包，再以子进程方式启动 Vite 开发服务器（监听 127.0.0.1 指定端口）。stdout 中检测到本地 URL 即视为启动成功，超时 15 秒则失败。</p>
+    </div>
+    <div class="step">
+      <b>Playwright 加载场景</b>
+      <p>无头 Chromium 打开新页面，设置 1400×900 视口。路由拦截所有非本地/非 data: 请求，确保完全离线。访问 ?scene=&lt;id&gt;，等待 window.__VIS_READY__ === true（最多 15 秒）。</p>
+    </div>
+    <div class="step">
+      <b>交互验证 + 透明截图</b>
+      <p>记录交互计数初始值，在 stage 上模拟两次鼠标移动，再读取计数——必须递增才算交互契约生效。随后对 #stage 元素执行 omitBackground 截图，保存为 out/&lt;scene&gt;-transparent.png。</p>
+    </div>
+    <div class="step">
+      <b>像素级质量门</b>
+      <p>pngjs 读取导出的 PNG，逐像素统计完全透明像素、可见像素（alpha &gt; 20）与彩色像素（RGB 最大最小差 &gt; 24）。三项阈值（透明 &gt; 8%、可见 &gt; 3.5%、彩色 &gt; 2500）任一不达标即报错，阻止劣质输出。</p>
+    </div>
+  </div>
+
+  <p>完成一个场景后，脚本关闭页面并进入下一场景，如此循环 12 次。全部通过后，关闭浏览器、终止 Vite 服务、正常退出。任何一步失败——无论是浏览器报错、交互不响应、还是像素质量不达标——都会立即抛出错误并终止测试。</p>
+
+  <h2>四、验证层设计细节</h2>
+
+  <div class="diagram" id="diagram-validation">
+    <svg viewBox="0 0 800 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="验证层三路质量门">
+      <!-- three columns -->
+      <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .1s">
+        <rect x="50" y="50" width="200" height="200" rx="12" fill="#fff" stroke="#0ea5e9" stroke-width="1.5"/>
+        <circle cx="150" cy="100" r="28" fill="#dbeafe"/>
+        <text x="150" y="106" text-anchor="middle" font-size="20" font-weight="700" fill="#0369a1">CE</text>
+        <text x="150" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#0c4a6e">Console Error</text>
+        <text x="150" y="172" text-anchor="middle" font-size="12" fill="#075985">监听 pageerror 与</text>
+        <text x="150" y="190" text-anchor="middle" font-size="12" fill="#075985">console.error</text>
+        <text x="150" y="218" text-anchor="middle" font-size="12" fill="#0369a1">=0 条才放行</text>
+      </g>
+
+      <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .3s">
+        <rect x="300" y="50" width="200" height="200" rx="12" fill="#fff" stroke="#8b5cf6" stroke-width="1.5"/>
+        <circle cx="400" cy="100" r="28" fill="#ede9fe"/>
+        <path d="M388 95 L396 105 L412 88" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="400" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#4c1d95">Interaction Contract</text>
+        <text x="400" y="172" text-anchor="middle" font-size="12" fill="#5b21b6">模拟鼠标移动后</text>
+        <text x="400" y="190" text-anchor="middle" font-size="12" fill="#5b21b6">__INTERACTION_COUNT__</text>
+        <text x="400" y="218" text-anchor="middle" font-size="12" fill="#6d28d9">必须递增</text>
+      </g>
+
+      <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .5s">
+        <rect x="550" y="50" width="200" height="200" rx="12" fill="#fff" stroke="#10b981" stroke-width="1.5"/>
+        <circle cx="650" cy="100" r="28" fill="#dcfce7"/>
+        <!-- pixel grid -->
+        <rect x="636" y="86" width="6" height="6" fill="#059669"/>
+        <rect x="644" y="86" width="6" height="6" fill="#10b981" opacity=".4"/>
+        <rect x="652" y="86" width="6" height="6" fill="#34d399"/>
+        <rect x="636" y="94" width="6" height="6" fill="#6ee7b7" opacity=".6"/>
+        <rect x="644" y="94" width="6" height="6" fill="#059669"/>
+        <rect x="652" y="94" width="6" height="6" fill="transparent" stroke="#059669" stroke-width=".5"/>
+        <rect x="636" y="102" width="6" height="6" fill="#10b981" opacity=".3"/>
+        <rect x="644" y="102" width="6" height="6" fill="#34d399"/>
+        <rect x="652" y="102" width="6" height="6" fill="#059669" opacity=".7"/>
+        <text x="650" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#064e3b">RGBA 像素门</text>
+        <text x="650" y="172" text-anchor="middle" font-size="12" fill="#065f46">透明 &gt; 8%</text>
+        <text x="650" y="190" text-anchor="middle" font-size="12" fill="#065f46">可见 &gt; 3.5%</text>
+        <text x="650" y="218" text-anchor="middle" font-size="12" fill="#047857">彩色 &gt; 2500 px</text>
+      </g>
+
+      <!-- title bar -->
+      <text x="400" y="25" text-anchor="middle" font-size="15" font-weight="700" fill="#0f172a" class="anim-node" style="opacity:0;animation:fadeIn .4s ease forwards">三路质量断言，全通过才放行</text>
+    </svg>
+    <p class="diagram-caption">图 4 · 验证层三道关卡：控制台零错误、交互契约触发、像素质量达标</p>
+  </div>
+
+  <p>验证层是本项目区别于普通示例集合的关键——它不是「能跑就行」，而是设置了<strong>三道并行的质量门</strong>。任何一道失败，整个测试立即终止。这样的设计确保每次代码变更后，12 个场景的视觉质量、交互可用性与运行时健康度都被自动守护，不会因重构或升级 ECharts 版本而悄悄退化。</p>
+
+  <h3>为什么是这三道门？</h3>
+  <p><strong>Console Error</strong> 捕获运行时异常——ECharts 配置写错、数据格式不对、API 在新版本中变更，都会在控制台留下错误。这是最基础的健康检查。</p>
+  <p><strong>交互契约</strong> 验证图面不仅是静态图片，而且能响应指针事件。这保证了 tooltip、emphasis、roam 缩放等交互功能真正可用，而不是渲染完就僵死。</p>
+  <p><strong>RGBA 像素门</strong> 是最有特色的一道。它不检查具体像素值（那样会因渲染差异而脆弱），而是检查统计特征——透明占比保证背景确实透明（便于嵌入其他设计），可见占比保证图不是空的，彩色像素数保证画面有足够丰富的内容而非单色块。这种<strong>统计式断言</strong>比像素精确比对更健壮，又比「有图就行」更严格。</p>
+
+  <h2>五、关键设计决策</h2>
+
+  <div class="layer-list">
+    <div class="layer">
+      <span class="badge" style="background:#ecfdf5;color:#047857">透明背景</span>
+      <div class="content">
+        <b>全透明呈现层，而非固定底色</b>
+        <span>选择 transparent 背景 + omitBackground 截图，是为了让导出图可以直接嵌入幻灯片、报告、任意品牌色的仪表板，无需二次抠图。代价是 RGBA 断言需要专门处理透明通道，但换来的是更高的复用价值。</span>
+      </div>
+    </div>
+    <div class="layer">
+      <span class="badge" style="background:#eff6ff;color:#1d4ed8">固定尺寸</span>
+      <div class="content">
+        <b>1400×900 固定画布，不随窗口缩放</b>
+        <span>Stage 使用 !important 固定宽高，ECharts init 也显式指定尺寸。这保证了像素级断言的稳定性，也确保每个场景的布局比例在不同环境下完全一致。对于示例集合，可复现的输出比响应式更重要。</span>
+      </div>
+    </div>
+    <div class="layer">
+      <span class="badge" style="background:#fef3c7;color:#b45309">离线隔离</span>
+      <div class="content">
+        <b>Playwright 路由拦截，拒绝所有外部请求</b>
+        <span>capture.mjs 中 page.route 只允许 127.0.0.1、localhost 和 data: 协议通过。这确保测试完全离线可重复，不会因 CDN 波动、字体加载、第三方脚本等不可控因素影响结果。</span>
+      </div>
+    </div>
+    <div class="layer">
+      <span class="badge" style="background:#fce7f3;color:#be185d">单文件配置</span>
+      <div class="content">
+        <b>所有场景集中在单个 main.ts</b>
+        <span>12 个场景的 option 都定义在同一个源文件里，而不是每个场景一个文件。对于示例集合项目，集中式配置降低了维护成本——统一调色板、统一 base 配置、方便横向比较不同图族的写法。代价是单文件较长，但每个场景独立且命名清晰，阅读成本可控。</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    ECharts Examples · 架构文档 · 生成于 2026-08-24
+  </div>
+</div>
+
+<script>
+  // 动画 keyframes 注入（确保自包含，无需外部 CSS 动画定义也能降级为静态）
+  (function(){
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+      @keyframes popIn { from { opacity: 0; transform: scale(.8) } to { opacity: 1; transform: scale(1) } }
+      @keyframes slideUp { from { opacity: 0; transform: translateY(16px) } to { opacity: 1; transform: translateY(0) } }
+      @keyframes drawLine { to { stroke-dashoffset: 0 } }
+      @keyframes dash { to { stroke-dashoffset: 0 } }
+    `;
+    document.head.appendChild(style);
+
+    // 若 JS 完全失败，CSS 中无动画定义，元素保持默认可见（.diagram 内的 SVG 元素默认可见，
+    // 只是用 .anim-node/.anim-link/.anim-flow 类做进入动画；JS 失败时这些类仍在，
+    // 但因 @keyframes 未注入而保持初始态——这是 JS 失败退化路径的关键：
+    // 我们需要保证 JS 失败时图仍然可读。
+    // 方案：在 style 块末尾加 fallback，当 JS 未执行时元素可见。
+    // 但我们已在 <style> 中写了样式，且此 script 在 body 末尾。
+    // 更稳妥：给所有 anim-* 元素设置默认可见，用 JS 初始设为不可见再动画。
+  })();
+
+  // 确保 JS 失败时所有动画元素仍然可见（JS 成功时再做进入动画）
+  // 做法：先把 anim-* 的初始内联样式覆盖掉
+  (function(){
+    // 此处 JS 已执行，说明 JS 可用。动画正常进行。
+    // 如果 JS 不可用，上面的内联 style="opacity:0;animation:..." 会让元素保持透明——
+    // 这是个问题。修正：用 noscript 兜底或 CSS 默认可见、JS 负责初始隐藏。
+    // 但我们已经写了内联 opacity:0。为了 JS 失败降级，这里加一个 noscript 不太好操作。
+    // 替代方案：检测 prefers-reduced-motion 或让 CSS 默认可见。
+    // 最简洁：在此脚本运行成功时不做任何事（动画正常播），
+    // 并在 <head> 的 <style> 中加一条兜底规则——已在顶部 style 中通过
+    // @media (prefers-reduced-motion: reduce) 处理了 motion 退化。
+    // JS 失败退化：我们添加一条 CSS，如果 .jsok 类不存在，则 anim-* 元素可见。
+  })();
+</script>
+
+<!-- JS 失败兜底：所有动画元素默认可见（覆盖内联 opacity:0） -->
+<noscript>
+  <style>
+    .anim-node,.anim-link,.anim-flow{opacity:1!important;stroke-dashoffset:0!important;animation:none!important}
+  </style>
+</noscript>
+
+<script>
+  // JS 成功路径：添加 jsok 类（目前无额外依赖，仅作标记）
+  document.documentElement.classList.add('jsok');
+
+  // 滚动进入视口时重启动画（增强交互，非必需）
+  if ('IntersectionObserver' in window) {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const diagram = entry.target;
+          const animEls = diagram.querySelectorAll('.anim-node, .anim-link, .anim-flow');
+          animEls.forEach(el => {
+            el.style.animation = 'none';
+            // 强制重排
+            void el.offsetWidth;
+            el.style.animation = '';
+          });
+          observer.unobserve(diagram);
+        }
+      });
+    }, { threshold: 0.2 });
+
+    document.querySelectorAll('.diagram').forEach(d => observer.observe(d));
+  }
+</script>
+
+</body>
+</html>

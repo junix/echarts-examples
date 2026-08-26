@@ -1,0 +1,213 @@
+{
+  "id": "echarts-examples-architecture-infographic",
+  "project": "echarts-examples",
+  "project_path": "~/projects/plot/echarts-examples",
+  "type": "architecture-infographic",
+  "language": "zh-CN",
+  "thesis": "12 个高信息密度 ECharts 场景，通过 Vite + Playwright 的离线渲染管线与三重质量门，保证每个场景的视觉与交互质量。",
+  "renderer": {
+    "engine": "xelatex + tikz",
+    "tex_engine": "XeLaTeX",
+    "tex_version": "3.141592653-2.6-1.40.25 (TeX Live 2023)",
+    "tikz_libraries": ["arrows.meta", "backgrounds", "calc", "fit", "positioning"],
+    "fonts": {
+      "serif": "Source Han Serif SC",
+      "mono": "Sarasa Mono SC",
+      "CJK": "Source Han Serif SC"
+    },
+    "build_command": "xelatex -interaction=nonstopmode architecture-infographic.tex",
+    "svg_converter": "pdftocairo -svg",
+    "png_converter": "pdftoppm -png -r 200"
+  },
+  "narrative_sections": [
+    {
+      "id": "hero",
+      "title": "项目身份与核心主张",
+      "elements": ["kicker", "main_title", "subtitle", "version_pill", "metrics_5up"],
+      "metrics": [
+        {"label": "ECharts 场景", "value": "12", "detail": "按分析家族分组"},
+        {"label": "视觉家族", "value": "6", "detail": "流程/层次/网络/时间…"},
+        {"label": "每场景画布", "value": "1400×900", "detail": "透明 PNG 输出"},
+        {"label": "质量门", "value": "3 重", "detail": "类型 / 交互 / RGBA"},
+        {"label": "离线可测", "value": "100%", "detail": "无网络依赖"}
+      ]
+    },
+    {
+      "id": "scene-catalog",
+      "title": "场景目录 · 12 个场景覆盖六大分析家族",
+      "visual_protagonist": true,
+      "families": [
+        {
+          "id": "flow",
+          "name": "流程与转化",
+          "scenes": [
+            {"id": "sankey", "name": "Sankey", "question": "可再生能源流向与耗散"},
+            {"id": "funnel", "name": "Funnel", "question": "科研招募人流失节点"}
+          ]
+        },
+        {
+          "id": "hierarchy",
+          "name": "层次与构成",
+          "scenes": [
+            {"id": "sunburst", "name": "Sunburst", "question": "研究组合三层分布"},
+            {"id": "treemap", "name": "Treemap", "question": "资产组合价值与风险"}
+          ]
+        },
+        {
+          "id": "network",
+          "name": "网络与图",
+          "scenes": [
+            {"id": "knowledge-graph", "name": "Knowledge Graph", "question": "气候知识图谱社区与桥接"}
+          ]
+        },
+        {
+          "id": "temporal",
+          "name": "时间与模式",
+          "scenes": [
+            {"id": "calendar", "name": "Calendar", "question": "运营异常全年日度强度"},
+            {"id": "river", "name": "Theme River", "question": "文化主题 1960–2031 演变"},
+            {"id": "candlestick", "name": "Candlestick", "question": "价格量波动微观结构"}
+          ]
+        },
+        {
+          "id": "multivariate",
+          "name": "多维与矩阵",
+          "scenes": [
+            {"id": "parallel", "name": "Parallel", "question": "远征五维野外条件"},
+            {"id": "heatmap", "name": "Heatmap", "question": "服务依赖调用频率×延迟"}
+          ]
+        },
+        {
+          "id": "monitoring",
+          "name": "监控与对比",
+          "scenes": [
+            {"id": "gauge-cluster", "name": "Gauge Cluster", "question": "系统健康仪表集群"},
+            {"id": "radar", "name": "Radar", "question": "航天器韧性三方案对比"}
+          ]
+        }
+      ],
+      "supporting_modules": ["catalog.json", "src/main.ts", "scripts/capture.mjs"]
+    },
+    {
+      "id": "render-pipeline",
+      "title": "渲染管线 · 从 TypeScript 源到透明 PNG 全离线闭环",
+      "grammar": "spine + round trips",
+      "stages": [
+        {"id": "p1", "name": "TS 源码", "input": "main.ts"},
+        {"id": "p2", "name": "类型检查", "detail": "tsc --noEmit"},
+        {"id": "p3", "name": "Vite 构建", "detail": "vite build"},
+        {"id": "p4", "name": "本地服务", "detail": "127.0.0.1:4175"},
+        {"id": "p5", "name": "浏览器渲染", "detail": "Playwright + Chrome"},
+        {"id": "p6", "name": "PNG 输出", "output": "out/*.png"}
+      ],
+      "round_trips": [
+        {"from": "p3", "to": "Vite Dev Server", "call": "构建产物", "reply": "HTTP 提供"},
+        {"from": "p4", "to": "Playwright + Chrome", "call": "加载页面", "reply": "截图结果"}
+      ],
+      "boundary": "本地回环 · 无外网"
+    },
+    {
+      "id": "quality-gates",
+      "title": "质量验证 · 三重断言确保每个场景都真的渲染出来了",
+      "gates": [
+        {
+          "id": "g1",
+          "name": "类型检查",
+          "kind": "静态",
+          "checks": ["tsc --noEmit", "校验 12 个 EChartsOption 类型", "scene 路由表完整性"]
+        },
+        {
+          "id": "g2",
+          "name": "交互契约",
+          "kind": "运行时",
+          "checks": ["等待 __VIS_READY__ 标志", "注入 pointer 事件", "验证 __INTERACTION_COUNT__ 递增"]
+        },
+        {
+          "id": "g3",
+          "name": "RGBA 像素断言",
+          "kind": "像素级",
+          "checks": ["透明像素 > 8%", "可见像素 > 3.5%", "彩色像素 > 2500", "防止空白 / 纯黑输出"]
+        }
+      ]
+    },
+    {
+      "id": "tech-stack",
+      "title": "技术栈",
+      "columns": [
+        {"name": "运行时", "items": ["echarts 6.1.0", "Canvas 渲染器", "透明背景设计"]},
+        {"name": "构建", "items": ["TypeScript 5.9", "Vite 8.2", "ESM 模块"]},
+        {"name": "测试 / 渲染", "items": ["Playwright + Chrome", "pngjs 像素分析", "离线网络隔离"]},
+        {"name": "设计原则", "items": ["场景即文档", "目录驱动组织", "断言胜过肉眼"]}
+      ]
+    }
+  ],
+  "palette": {
+    "paper": "#F7F4EE",
+    "ink": "#0F1B2A",
+    "slate": "#4F6378",
+    "fog": "#CFDBE5",
+    "deep": "#142744",
+    "ocean": "#2E6B8A",
+    "teal": "#2FA496",
+    "mint": "#D6EEE9",
+    "coral": "#E2667B",
+    "gold": "#E8B94F",
+    "violet": "#8A7CC9",
+    "sky": "#5E8FD6"
+  },
+  "sources": [
+    "README.md",
+    "catalog.json",
+    "package.json",
+    "src/main.ts",
+    "scripts/capture.mjs",
+    "index.html",
+    "tsconfig.json"
+  ],
+  "outputs": {
+    "tex": {
+      "path": "docs/architecture-infographic.tex",
+      "size_bytes": 29046,
+      "sha256_16": "22bf32c6e06dbd53",
+      "role": "editable_source"
+    },
+    "pdf": {
+      "path": "docs/architecture-infographic.pdf",
+      "size_bytes": 119386,
+      "sha256_16": "4f3e9b0ee61fea40",
+      "role": "vector_final",
+      "page_count": 1,
+      "size_pt": {"width": 558.66, "height": 883.03}
+    },
+    "svg": {
+      "path": "docs/architecture-infographic.svg",
+      "size_bytes": 1090593,
+      "sha256_16": "ee7f5f8fad136bac",
+      "role": "vector_web",
+      "converter": "poppler pdftocairo"
+    },
+    "png": {
+      "path": "docs/architecture-infographic.png",
+      "size_bytes": 555405,
+      "sha256_16": "d332dde8f926e4b8",
+      "role": "raster_preview",
+      "dpi": 200,
+      "width_px": 1585,
+      "height_px": 2510,
+      "mode": "RGB"
+    }
+  },
+  "verification": {
+    "compile_clean": true,
+    "no_missing_glyphs": true,
+    "no_text_overflow_issues": "mostly_clean_minor_label_overlap_acceptable",
+    "cjk_glyphs_present": true,
+    "all_12_scenes_represented": true,
+    "pipeline_stages_complete": true,
+    "quality_gates_documented": true,
+    "sources_cited": true
+  },
+  "created": "2026-08-24",
+  "skill": "create-infographic",
+  "backend": "tikz_xelatex"
+}
