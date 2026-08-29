@@ -224,38 +224,38 @@
       <!-- center hub -->
       <circle cx="400" cy="220" r="42" fill="#0ea5e9" class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards"/>
       <text x="400" y="216" text-anchor="middle" font-size="13" font-weight="700" fill="#fff">ECharts</text>
-      <text x="400" y="232" text-anchor="middle" font-size="11" fill="#e0f2fe">12 Scenes</text>
+      <text x="400" y="232" text-anchor="middle" font-size="11" fill="#e0f2fe">12 个场景</text>
 
       <!-- 6 family nodes around -->
       <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .2s">
         <rect x="60" y="40" width="170" height="64" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
-        <text x="76" y="64" font-size="13" font-weight="700" fill="#92400e">流 / Flow</text>
+        <text x="76" y="64" font-size="13" font-weight="700" fill="#92400e">流</text>
         <text x="76" y="84" font-size="12" fill="#78350f">Sankey · 能源流向</text>
       </g>
       <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .3s">
         <rect x="315" y="20" width="170" height="64" rx="10" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1.5"/>
-        <text x="331" y="44" font-size="13" font-weight="700" fill="#5b21b6">层次 / Hierarchy</text>
-        <text x="331" y="64" font-size="12" fill="#4c1d95">Sunburst · Treemap</text>
+        <text x="331" y="44" font-size="13" font-weight="700" fill="#5b21b6">层次</text>
+        <text x="331" y="64" font-size="12" fill="#4c1d95">旭日图 · 矩形树图</text>
       </g>
       <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .4s">
         <rect x="570" y="40" width="170" height="64" rx="10" fill="#dbeafe" stroke="#0ea5e9" stroke-width="1.5"/>
-        <text x="586" y="64" font-size="13" font-weight="700" fill="#075985">多维 / Multivariate</text>
-        <text x="586" y="84" font-size="12" fill="#0c4a6e">Parallel · Radar</text>
+        <text x="586" y="64" font-size="13" font-weight="700" fill="#075985">多维</text>
+        <text x="586" y="84" font-size="12" fill="#0c4a6e">平行坐标 · 雷达图</text>
       </g>
       <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .5s">
         <rect x="60" y="336" width="170" height="64" rx="10" fill="#dcfce7" stroke="#10b981" stroke-width="1.5"/>
-        <text x="76" y="360" font-size="13" font-weight="700" fill="#065f46">网络 / Network</text>
-        <text x="76" y="380" font-size="12" fill="#064e3b">Knowledge Graph</text>
+        <text x="76" y="360" font-size="13" font-weight="700" fill="#065f46">网络</text>
+        <text x="76" y="380" font-size="12" fill="#064e3b">知识图谱</text>
       </g>
       <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .6s">
         <rect x="315" y="356" width="170" height="64" rx="10" fill="#fce7f3" stroke="#ec4899" stroke-width="1.5"/>
-        <text x="331" y="380" font-size="13" font-weight="700" fill="#9d174d">时序 / Temporal</text>
-        <text x="331" y="400" font-size="12" fill="#831843">Calendar · Theme River</text>
+        <text x="331" y="380" font-size="13" font-weight="700" fill="#9d174d">时序</text>
+        <text x="331" y="400" font-size="12" fill="#831843">日历热力图 · 河流图</text>
       </g>
       <g class="anim-node" style="opacity:0;animation:popIn .5s cubic-bezier(.2,1.2,.4,1) forwards .7s">
         <rect x="570" y="336" width="170" height="64" rx="10" fill="#fee2e2" stroke="#ef4444" stroke-width="1.5"/>
         <text x="586" y="360" font-size="13" font-weight="700" fill="#991b1b">矩阵 / 指标 / 过程</text>
-        <text x="586" y="380" font-size="12" fill="#7f1d1d">Heatmap · Gauges · Funnel · Candlestick</text>
+        <text x="586" y="380" font-size="12" fill="#7f1d1d">热力图 · 仪表盘 · 漏斗图 · K 线图</text>
       </g>
 
       <!-- links from hub to families -->
@@ -298,11 +298,11 @@
       <tr><th>图族</th><th>场景 ID</th><th>分析问题举例</th><th>核心系列</th></tr>
     </thead>
     <tbody>
-      <tr><td>流 / Flow</td><td>sankey</td><td>可再生能源如何流向存储与需求侧？</td><td>series.sankey</td></tr>
-      <tr><td>层次 / Hierarchy</td><td>sunburst, treemap</td><td>科研组合/产品组合如何分布与集中？</td><td>series.sunburst, series.treemap</td></tr>
-      <tr><td>多维 / Multivariate</td><td>parallel, radar</td><td>科考剖面/航天器子系统如何多维对比？</td><td>series.parallel, series.radar</td></tr>
-      <tr><td>网络 / Network</td><td>knowledge-graph</td><td>气候知识图谱中哪些观念桥接社区？</td><td>series.graph (force)</td></tr>
-      <tr><td>时序 / Temporal</td><td>calendar, river</td><td>运营异常何时聚集？文化主题如何兴衰？</td><td>series.heatmap+calendar, series.themeRiver</td></tr>
+      <tr><td>流</td><td>sankey</td><td>可再生能源如何流向存储与需求侧？</td><td>series.sankey</td></tr>
+      <tr><td>层次</td><td>sunburst, treemap</td><td>科研组合/产品组合如何分布与集中？</td><td>series.sunburst, series.treemap</td></tr>
+      <tr><td>多维</td><td>parallel, radar</td><td>科考剖面/航天器子系统如何多维对比？</td><td>series.parallel, series.radar</td></tr>
+      <tr><td>网络</td><td>knowledge-graph</td><td>气候知识图谱中哪些观念桥接社区？</td><td>series.graph (force)</td></tr>
+      <tr><td>时序</td><td>calendar, river</td><td>运营异常何时聚集？文化主题如何兴衰？</td><td>series.heatmap+calendar, series.themeRiver</td></tr>
       <tr><td>矩阵/指标/过程</td><td>heatmap, gauge-cluster, funnel, candlestick</td><td>依赖压力、健康仪表、转化漏斗、量价结构</td><td>series.heatmap/gauge/funnel/candlestick+bar</td></tr>
     </tbody>
   </table>
@@ -318,13 +318,13 @@
         <rect x="30" y="40" width="130" height="72" rx="10" fill="#f1f5f9" stroke="#64748b" stroke-width="1.5"/>
         <text x="95" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#334155">① 读取目录</text>
         <text x="95" y="90" text-anchor="middle" font-size="11" fill="#475569">catalog.json</text>
-        <text x="95" y="104" text-anchor="middle" font-size="11" fill="#64748b">12 scenes</text>
+        <text x="95" y="104" text-anchor="middle" font-size="11" fill="#64748b">12 个场景</text>
       </g>
 
       <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .3s">
         <rect x="200" y="40" width="130" height="72" rx="10" fill="#dbeafe" stroke="#0ea5e9" stroke-width="1.5"/>
         <text x="265" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#075985">② 构建+起服</text>
-        <text x="265" y="90" text-anchor="middle" font-size="11" fill="#0c4a6e">Vite build</text>
+        <text x="265" y="90" text-anchor="middle" font-size="11" fill="#0c4a6e">Vite 构建</text>
         <text x="265" y="104" text-anchor="middle" font-size="11" fill:#0369a1>127.0.0.1:PORT</text>
       </g>
 
@@ -332,13 +332,13 @@
         <rect x="370" y="40" width="130" height="72" rx="10" fill="#ede9fe" stroke="#8b5cf6" stroke-width="1.5"/>
         <text x="435" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#5b21b6">③ 加载场景</text>
         <text x="435" y="90" text-anchor="middle" font-size="11" fill="#4c1d95">Playwright</text>
-        <text x="435" y="104" text-anchor="middle" font-size="11" fill="#6d28d9">wait VIS_READY</text>
+        <text x="435" y="104" text-anchor="middle" font-size="11" fill="#6d28d9">等待 VIS_READY</text>
       </g>
 
       <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .7s">
         <rect x="540" y="40" width="130" height="72" rx="10" fill="#fef3c7" stroke="#f59e0b" stroke-width="1.5"/>
         <text x="605" y="70" text-anchor="middle" font-size="13" font-weight="700" fill="#92400e">④ 交互+截图</text>
-        <text x="605" y="90" text-anchor="middle" font-size="11" fill="#78350f">pointer move</text>
+        <text x="605" y="90" text-anchor="middle" font-size="11" fill="#78350f">指针移动</text>
         <text x="605" y="104" text-anchor="middle" font-size="11" fill="#b45309">omitBackground</text>
       </g>
 
@@ -411,8 +411,8 @@
       <g class="anim-node" style="opacity:0;animation:slideUp .5s ease forwards .1s">
         <rect x="50" y="50" width="200" height="200" rx="12" fill="#fff" stroke="#0ea5e9" stroke-width="1.5"/>
         <circle cx="150" cy="100" r="28" fill="#dbeafe"/>
-        <text x="150" y="106" text-anchor="middle" font-size="20" font-weight="700" fill="#0369a1">CE</text>
-        <text x="150" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#0c4a6e">Console Error</text>
+        <text x="150" y="107" text-anchor="middle" font-size="20" font-weight="700" fill="#0369a1">错</text>
+        <text x="150" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#0c4a6e">控制台错误</text>
         <text x="150" y="172" text-anchor="middle" font-size="12" fill="#075985">监听 pageerror 与</text>
         <text x="150" y="190" text-anchor="middle" font-size="12" fill="#075985">console.error</text>
         <text x="150" y="218" text-anchor="middle" font-size="12" fill="#0369a1">=0 条才放行</text>
@@ -422,7 +422,7 @@
         <rect x="300" y="50" width="200" height="200" rx="12" fill="#fff" stroke="#8b5cf6" stroke-width="1.5"/>
         <circle cx="400" cy="100" r="28" fill="#ede9fe"/>
         <path d="M388 95 L396 105 L412 88" fill="none" stroke="#7c3aed" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-        <text x="400" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#4c1d95">Interaction Contract</text>
+        <text x="400" y="150" text-anchor="middle" font-size="14" font-weight="700" fill="#4c1d95">交互契约</text>
         <text x="400" y="172" text-anchor="middle" font-size="12" fill="#5b21b6">模拟鼠标移动后</text>
         <text x="400" y="190" text-anchor="middle" font-size="12" fill="#5b21b6">__INTERACTION_COUNT__</text>
         <text x="400" y="218" text-anchor="middle" font-size="12" fill="#6d28d9">必须递增</text>
@@ -456,7 +456,7 @@
   <p>验证层是本项目区别于普通示例集合的关键——它不是「能跑就行」，而是设置了<strong>三道并行的质量门</strong>。任何一道失败，整个测试立即终止。这样的设计确保每次代码变更后，12 个场景的视觉质量、交互可用性与运行时健康度都被自动守护，不会因重构或升级 ECharts 版本而悄悄退化。</p>
 
   <h3>为什么是这三道门？</h3>
-  <p><strong>Console Error</strong> 捕获运行时异常——ECharts 配置写错、数据格式不对、API 在新版本中变更，都会在控制台留下错误。这是最基础的健康检查。</p>
+  <p><strong>控制台错误</strong>捕获运行时异常——ECharts 配置写错、数据格式不对、API 在新版本中变更，都会在控制台留下错误。这是最基础的健康检查。</p>
   <p><strong>交互契约</strong> 验证图面不仅是静态图片，而且能响应指针事件。这保证了 tooltip、emphasis、roam 缩放等交互功能真正可用，而不是渲染完就僵死。</p>
   <p><strong>RGBA 像素门</strong> 是最有特色的一道。它不检查具体像素值（那样会因渲染差异而脆弱），而是检查统计特征——透明占比保证背景确实透明（便于嵌入其他设计），可见占比保证图不是空的，彩色像素数保证画面有足够丰富的内容而非单色块。这种<strong>统计式断言</strong>比像素精确比对更健壮，又比「有图就行」更严格。</p>
 
