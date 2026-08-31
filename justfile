@@ -14,7 +14,7 @@ test: build
 
 # Browser demo repo — no binary, no launcher (ADR-749: nothing to install).
 install:
-    @echo "echarts-examples: browser demos, nothing to install"
+    @echo "echarts-demos: browser demos, nothing to install"
 
 # Remove generated images.
 clean:
