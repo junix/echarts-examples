@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>echarts-demos — gallery</title>
+<style>
+:root{
+  --bg:#fbfaf8; --panel:#fff; --ink:#16181d; --muted:#5f6570; --faint:#8b929e;
+  --line:#e3e1dc; --accent:#2f6f5e; --chip:#eef1ef; --code:#f6f5f2;
+  --shadow:0 1px 2px rgba(20,22,26,.05),0 8px 24px -12px rgba(20,22,26,.18);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]){
+  --bg:#0f1114; --panel:#161a1f; --ink:#e8eaee; --muted:#a2abb8; --faint:#727d8c;
+  --line:#262c34; --accent:#6fd3b0; --chip:#1d232a; --code:#12161a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}}
+:root[data-theme=dark]{
+  --bg:#0f1114; --panel:#161a1f; --ink:#e8eaee; --muted:#a2abb8; --faint:#727d8c;
+  --line:#262c34; --accent:#6fd3b0; --chip:#1d232a; --code:#12161a;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.6 ui-sans-serif,-apple-system,"Segoe UI",Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased}
+.wrap{max-width:1240px;margin:0 auto;padding:56px 28px 96px}
+header{border-bottom:1px solid var(--line);padding-bottom:28px;margin-bottom:40px}
+h1{margin:0;font-size:30px;letter-spacing:-.02em;font-weight:650}
+.tagline{margin:10px 0 0;color:var(--muted);max-width:70ch;font-size:16px}
+.meta{margin-top:20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pill{font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+  background:var(--chip);border:1px solid var(--line);border-radius:999px;padding:6px 11px}
+.pill b{color:var(--ink);font-weight:600}
+.grid{display:grid;gap:26px;grid-template-columns:repeat(auto-fill,minmax(360px,1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;
+  overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column}
+.shot{margin:0;padding:16px;display:flex;flex-direction:column;gap:10px;
+  align-items:center;justify-content:center;height:250px;border-bottom:1px solid var(--line)}
+.shot.tall{height:400px}
+.shot.checker{background-color:#f2f1ee;background-image:
+  linear-gradient(45deg,#e2e0dc 25%,transparent 25%,transparent 75%,#e2e0dc 75%),
+  linear-gradient(45deg,#e2e0dc 25%,transparent 25%,transparent 75%,#e2e0dc 75%);
+  background-size:16px 16px;background-position:0 0,8px 8px}
+.shot.dark{background:#11151a}
+.shot.light{background:#fff}
+.shot img,.shot video{max-width:100%;max-height:100%;width:auto;height:auto;
+  object-fit:contain;display:block;border-radius:3px}
+.shot.multi img{max-height:calc(50% - 5px)}
+.shot .missing{color:var(--faint);font-size:13px;font-style:italic;text-align:center}
+.body{padding:18px 20px 20px;display:flex;flex-direction:column;gap:10px;flex:1}
+.idx{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--faint);
+  letter-spacing:.09em;text-transform:uppercase}
+h2{margin:0;font-size:17px;font-weight:620;letter-spacing:-.01em}
+.blurb{margin:0;color:var(--muted);font-size:14px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.tag{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--muted);
+  background:var(--chip);border-radius:5px;padding:4px 7px}
+details{margin-top:auto;border-top:1px solid var(--line);padding-top:12px}
+summary{cursor:pointer;font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:var(--accent);list-style:none;user-select:none}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸ ";display:inline-block;transition:transform .15s}
+details[open] summary::before{content:"▾ "}
+pre{margin:12px 0 0;background:var(--code);border:1px solid var(--line);border-radius:8px;
+  padding:14px;overflow-x:auto;font:12px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace;
+  max-height:440px;overflow-y:auto}
+pre .c{color:var(--faint);font-style:italic}
+pre .s{color:var(--accent)}
+pre .n{color:#b1784f}
+@media (prefers-color-scheme:dark){:root:not([data-theme=light]) pre .n{color:#d8a06a}}
+:root[data-theme=dark] pre .n{color:#d8a06a}
+.extra{font:11px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--faint)}
+footer{margin-top:56px;padding-top:22px;border-top:1px solid var(--line);
+  color:var(--faint);font-size:13px}
+footer code{background:var(--chip);border-radius:4px;padding:2px 6px;
+  font:12px/1 ui-monospace,SFMono-Regular,Menlo,monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>echarts-demos</h1>
+    <p class="tagline">Twelve information-dense ECharts scenes over a deliberately transparent presentation layer — sankey, sunburst, parallel coordinates, force graphs, treemaps, calendars, candlesticks and more.</p>
+    <div class="meta"><span class="pill">Apache ECharts 6</span><span class="pill"><b>12</b> demos</span><span class="pill"><b>12</b> rendered</span></div>
+  </header>
+  <main class="grid">
+      <article class="card">
+        <figure class="shot dark"><img src="out/sankey-transparent.png" alt="Sankey" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">01 · flow</div>
+          <h2>Sankey</h2>
+          <p class="blurb">Where does renewable energy move and dissipate?</p>
+          <div class="tags"><span class="tag">sankey</span><span class="tag">energy</span><span class="tag">flow</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const sankey:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;ENERGY AFTERLIFE&#x27;</span>,subtext:<span class="s">&#x27;RENEWABLE GENERATION → STORAGE → DEMAND&#x27;</span>},series:[{type:<span class="s">&#x27;sankey&#x27;</span>,left:<span class="n">90</span>,right:<span class="n">100</span>,top:<span class="n">170</span>,bottom:<span class="n">90</span>,nodeAlign:<span class="s">&#x27;justify&#x27;</span>,layoutIterations:<span class="n">48</span>,emphasis:{focus:<span class="s">&#x27;adjacency&#x27;</span>},label:{color:ink,fontSize:<span class="n">14</span>},itemStyle:{borderColor:<span class="s">&#x27;rgba(240,248,255,.65)&#x27;</span>,borderWidth:<span class="n">1</span>},lineStyle:{color:<span class="s">&#x27;gradient&#x27;</span>,curveness:.<span class="n">54</span>,opacity:.<span class="n">42</span>},data:[<span class="s">&#x27;Wind&#x27;</span>,<span class="s">&#x27;Solar&#x27;</span>,<span class="s">&#x27;Hydro&#x27;</span>,<span class="s">&#x27;Grid&#x27;</span>,<span class="s">&#x27;Battery&#x27;</span>,<span class="s">&#x27;Hydrogen&#x27;</span>,<span class="s">&#x27;Homes&#x27;</span>,<span class="s">&#x27;Mobility&#x27;</span>,<span class="s">&#x27;Industry&#x27;</span>,<span class="s">&#x27;Reserve&#x27;</span>].map(name=&gt;({name})),links:energyLinks.map(([source,target,value])=&gt;({source,target,value}))}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/sunburst-transparent.png" alt="Sunburst" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">02 · hierarchy</div>
+          <h2>Sunburst</h2>
+          <p class="blurb">How is a research portfolio distributed across programs?</p>
+          <div class="tags"><span class="tag">sunburst</span><span class="tag">hierarchy</span><span class="tag">portfolio</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const sunburst:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;RESEARCH CONSTELLATION&#x27;</span>,subtext:<span class="s">&#x27;PORTFOLIO BALANCE / 2026&#x27;</span>},series:[{type:<span class="s">&#x27;sunburst&#x27;</span>,center:[<span class="s">&#x27;52%&#x27;</span>,<span class="s">&#x27;55%&#x27;</span>],radius:[<span class="s">&#x27;14%&#x27;</span>,<span class="s">&#x27;75%&#x27;</span>],sort:undefined,emphasis:{focus:<span class="s">&#x27;ancestor&#x27;</span>},label:{rotate:<span class="s">&#x27;radial&#x27;</span>,color:ink,fontSize:<span class="n">12</span>},itemStyle:{borderColor:<span class="s">&#x27;rgba(4,12,25,.65)&#x27;</span>,borderWidth:<span class="n">4</span>},levels:[{},{r0:<span class="s">&#x27;14%&#x27;</span>,r:<span class="s">&#x27;35%&#x27;</span>,label:{rotate:<span class="n">0</span>,fontSize:<span class="n">15</span>,fontWeight:<span class="s">&#x27;bold&#x27;</span>}},{r0:<span class="s">&#x27;35%&#x27;</span>,r:<span class="s">&#x27;57%&#x27;</span>},{r0:<span class="s">&#x27;57%&#x27;</span>,r:<span class="s">&#x27;76%&#x27;</span>,label:{position:<span class="s">&#x27;outside&#x27;</span>,padding:<span class="n">3</span>,silent:false}}],data:[{name:<span class="s">&#x27;CLIMATE&#x27;</span>,itemStyle:{color:<span class="s">&#x27;#54d6c6&#x27;</span>},children:[{name:<span class="s">&#x27;Oceans&#x27;</span>,value:<span class="n">18</span>,children:[{name:<span class="s">&#x27;Currents&#x27;</span>,value:<span class="n">9</span>},{name:<span class="s">&#x27;Carbon&#x27;</span>,value:<span class="n">9</span>}]},{name:<span class="s">&#x27;Atmosphere&#x27;</span>,value:<span class="n">14</span>,children:[{name:<span class="s">&#x27;Aerosols&#x27;</span>,value:<span class="n">6</span>},{name:<span class="s">&#x27;Clouds&#x27;</span>,value:<span class="n">8</span>}]}]},{name:<span class="s">&#x27;COMPUTE&#x27;</span>,itemStyle:{color:<span class="s">&#x27;#7b9cff&#x27;</span>},children:[{name:<span class="s">&#x27;Systems&#x27;</span>,value:<span class="n">17</span>,children:[{name:<span class="s">&#x27;Compilers&#x27;</span>,value:<span class="n">8</span>},{name:<span class="s">&#x27;Networks&#x27;</span>,value:<span class="n">9</span>}]},{name:<span class="s">&#x27;Intelligence&#x27;</span>,value:<span class="n">20</span>,children:[{name:<span class="s">&#x27;Reasoning&#x27;</span>,value:<span class="n">12</span>},{name:<span class="s">&#x27;Robotics&#x27;</span>,value:<span class="n">8</span>}]}]},{name:<span class="s">&#x27;LIFE&#x27;</span>,itemStyle:{color:<span class="s">&#x27;#ff6f91&#x27;</span>},children:[{name:<span class="s">&#x27;Ecology&#x27;</span>,value:<span class="n">13</span>,children:[{name:<span class="s">&#x27;Forests&#x27;</span>,value:<span class="n">7</span>},{name:<span class="s">&#x27;Soils&#x27;</span>,value:<span class="n">6</span>}]},{name:<span class="s">&#x27;Health&#x27;</span>,value:<span class="n">18</span>,children:[{name:<span class="s">&#x27;Genomics&#x27;</span>,value:<span class="n">10</span>},{name:<span class="s">&#x27;Imaging&#x27;</span>,value:<span class="n">8</span>}]}]}]}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/parallel-transparent.png" alt="Parallel" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">03 · multivariate</div>
+          <h2>Parallel</h2>
+          <p class="blurb">How do expedition profiles differ across five conditions?</p>
+          <div class="tags"><span class="tag">parallel-coordinates</span><span class="tag">fieldwork</span><span class="tag">profiles</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const parallel:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;EXPEDITION PROFILES&#x27;</span>,subtext:<span class="s">&#x27;MULTIVARIATE FIELD CONDITIONS&#x27;</span>},parallelAxis:[[<span class="s">&#x27;Elevation&#x27;</span>,<span class="s">&#x27;m&#x27;</span>],[<span class="s">&#x27;Temperature&#x27;</span>,<span class="s">&#x27;°C&#x27;</span>],[<span class="s">&#x27;Humidity&#x27;</span>,<span class="s">&#x27;%&#x27;</span>],[<span class="s">&#x27;Wind&#x27;</span>,<span class="s">&#x27;km/h&#x27;</span>],[<span class="s">&#x27;Visibility&#x27;</span>,<span class="s">&#x27;km&#x27;</span>]].map((v,i)=&gt;({dim:i,name:v[<span class="n">0</span>],nameTextStyle:{color:ink,fontSize:<span class="n">13</span>},axisLine:{lineStyle:{color:<span class="s">&#x27;#55768e&#x27;</span>}},axisLabel:{color:muted},splitLine:{show:false}})).flat(),parallel:{left:<span class="n">100</span>,right:<span class="n">115</span>,top:<span class="n">190</span>,bottom:<span class="n">120</span>,parallelAxisDefault:{type:<span class="s">&#x27;value&#x27;</span>,min:<span class="n">0</span>,max:<span class="n">100</span>}},visualMap:{show:true,type:<span class="s">&#x27;piecewise&#x27;</span>,dimension:<span class="n">5</span>,categories:[<span class="n">0</span>,<span class="n">1</span>,<span class="n">2</span>,<span class="n">3</span>,<span class="n">4</span>],inRange:{color:palette},left:<span class="n">90</span>,bottom:<span class="n">40</span>,textStyle:{color:muted}},series:[{type:<span class="s">&#x27;parallel&#x27;</span>,lineStyle:{width:<span class="n">2</span>,opacity:.<span class="n">48</span>},data:parallelData,smooth:.<span class="n">25</span>}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/knowledge-graph-transparent.png" alt="Knowledge graph" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">04 · network</div>
+          <h2>Knowledge graph</h2>
+          <p class="blurb">Which ideas bridge the climate knowledge graph?</p>
+          <div class="tags"><span class="tag">graph</span><span class="tag">force</span><span class="tag">knowledge</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const knowledgeGraph:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;CLIMATE KNOWLEDGE BRIDGES&#x27;</span>,subtext:<span class="s">&#x27;COMMUNITIES, CROSS-LINKS, AND CENTRAL IDEAS&#x27;</span>},legend:{data:[<span class="s">&#x27;Earth&#x27;</span>,<span class="s">&#x27;Life&#x27;</span>,<span class="s">&#x27;Compute&#x27;</span>,<span class="s">&#x27;Policy&#x27;</span>,<span class="s">&#x27;Energy&#x27;</span>],right:<span class="n">80</span>,top:<span class="n">75</span>,textStyle:{color:muted}},series:[{type:<span class="s">&#x27;graph&#x27;</span>,layout:<span class="s">&#x27;force&#x27;</span>,left:<span class="n">45</span>,right:<span class="n">35</span>,top:<span class="n">125</span>,bottom:<span class="n">25</span>,roam:true,categories:[<span class="s">&#x27;Earth&#x27;</span>,<span class="s">&#x27;Life&#x27;</span>,<span class="s">&#x27;Compute&#x27;</span>,<span class="s">&#x27;Policy&#x27;</span>,<span class="s">&#x27;Energy&#x27;</span>].map(name=&gt;({name})),data:nodes,links,lineStyle:{color:<span class="s">&#x27;source&#x27;</span>,curveness:.<span class="n">18</span>,opacity:.<span class="n">42</span>,width:<span class="n">2</span>},label:{show:true,color:ink,fontSize:<span class="n">11</span>},itemStyle:{borderColor:<span class="s">&#x27;#e8f7ff&#x27;</span>,borderWidth:<span class="n">1.5</span>},force:{repulsion:<span class="n">190</span>,edgeLength:[<span class="n">34</span>,<span class="n">105</span>],gravity:.<span class="n">12</span>},emphasis:{focus:<span class="s">&#x27;adjacency&#x27;</span>}}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/treemap-transparent.png" alt="Treemap" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">05 · hierarchy</div>
+          <h2>Treemap</h2>
+          <p class="blurb">Where does a product portfolio concentrate risk and value?</p>
+          <div class="tags"><span class="tag">treemap</span><span class="tag">portfolio</span><span class="tag">risk</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const treemap:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;PORTFOLIO RISK LANDSCAPE&#x27;</span>,subtext:<span class="s">&#x27;VALUE, NESTING, AND CONCENTRATION&#x27;</span>},series:[{type:<span class="s">&#x27;treemap&#x27;</span>,top:<span class="n">160</span>,left:<span class="n">70</span>,right:<span class="n">70</span>,bottom:<span class="n">55</span>,roam:false,nodeClick:false,breadcrumb:{show:false},label:{show:true,color:ink,fontSize:<span class="n">13</span>},upperLabel:{show:true,height:<span class="n">30</span>,color:<span class="s">&#x27;#f1f8ff&#x27;</span>,fontWeight:<span class="s">&#x27;bold&#x27;</span>},itemStyle:{borderColor:<span class="s">&#x27;rgba(9,20,35,.8)&#x27;</span>,borderWidth:<span class="n">3</span>,gapWidth:<span class="n">3</span>},levels:[{itemStyle:{borderWidth:<span class="n">0</span>,gapWidth:<span class="n">8</span>}},{colorSaturation:[.<span class="n">35</span>,.<span class="n">7</span>],itemStyle:{borderWidth:<span class="n">4</span>,gapWidth:<span class="n">3</span>}},{colorSaturation:[.<span class="n">2</span>,.<span class="n">6</span>]}],data:treeData}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/calendar-transparent.png" alt="Calendar" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">06 · temporal</div>
+          <h2>Calendar</h2>
+          <p class="blurb">When do operational anomalies cluster through the year?</p>
+          <div class="tags"><span class="tag">calendar</span><span class="tag">heatmap</span><span class="tag">anomaly</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const calendar:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;OPERATIONAL ANOMALY CALENDAR&#x27;</span>,subtext:<span class="s">&#x27;DAILY EVENT INTENSITY / 2026&#x27;</span>},visualMap:{min:<span class="n">0</span>,max:<span class="n">75</span>,orient:<span class="s">&#x27;horizontal&#x27;</span>,left:<span class="s">&#x27;center&#x27;</span>,bottom:<span class="n">35</span>,inRange:{color:[<span class="s">&#x27;#142744&#x27;</span>,<span class="s">&#x27;#246577&#x27;</span>,<span class="s">&#x27;#54d6c6&#x27;</span>,<span class="s">&#x27;#ffd166&#x27;</span>,<span class="s">&#x27;#ff6f91&#x27;</span>]},textStyle:{color:muted}},calendar:{top:<span class="n">190</span>,left:<span class="n">110</span>,right:<span class="n">70</span>,cellSize:[<span class="s">&#x27;auto&#x27;</span>,<span class="n">72</span>],range:<span class="s">&#x27;2026&#x27;</span>,yearLabel:{color:ink,fontSize:<span class="n">22</span>},monthLabel:{color:muted},dayLabel:{color:muted},itemStyle:{color:<span class="s">&#x27;transparent&#x27;</span>,borderColor:<span class="s">&#x27;#314d65&#x27;</span>,borderWidth:<span class="n">2</span>}},series:[{type:<span class="s">&#x27;heatmap&#x27;</span>,coordinateSystem:<span class="s">&#x27;calendar&#x27;</span>,data:calendarData}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/candlestick-transparent.png" alt="Candlestick" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">07 · financial</div>
+          <h2>Candlestick</h2>
+          <p class="blurb">How do price, volume, and volatility align?</p>
+          <div class="tags"><span class="tag">candlestick</span><span class="tag">volume</span><span class="tag">finance</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const candlestick:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;PRICE / VOLUME / VOLATILITY&#x27;</span>,subtext:<span class="s">&#x27;SYNTHETIC MARKET MICROSTRUCTURE&#x27;</span>},grid:[{left:<span class="n">85</span>,right:<span class="n">80</span>,top:<span class="n">175</span>,height:<span class="n">440</span>},{left:<span class="n">85</span>,right:<span class="n">80</span>,top:<span class="n">650</span>,height:<span class="n">125</span>}],xAxis:[{type:<span class="s">&#x27;category&#x27;</span>,data:ohlc.map((_,i)=&gt;`D${i+<span class="n">1</span>}`),boundaryGap:true,axisLabel:{color:muted,interval:<span class="n">4</span>},axisLine:{lineStyle:{color:<span class="s">&#x27;#58768d&#x27;</span>}}},{type:<span class="s">&#x27;category&#x27;</span>,gridIndex:<span class="n">1</span>,data:ohlc.map((_,i)=&gt;`D${i+<span class="n">1</span>}`),axisLabel:{show:false},axisLine:{lineStyle:{color:<span class="s">&#x27;#58768d&#x27;</span>}}}],yAxis:[{scale:true,axisLabel:{color:muted},splitLine:{lineStyle:{color:<span class="s">&#x27;rgba(95,126,148,.18)&#x27;</span>}}},{gridIndex:<span class="n">1</span>,axisLabel:{color:muted},splitLine:{show:false}}],series:[{type:<span class="s">&#x27;candlestick&#x27;</span>,data:ohlc,itemStyle:{color:<span class="s">&#x27;#54d6c6&#x27;</span>,color0:<span class="s">&#x27;#ff6f91&#x27;</span>,borderColor:<span class="s">&#x27;#54d6c6&#x27;</span>,borderColor0:<span class="s">&#x27;#ff6f91&#x27;</span>}},{type:<span class="s">&#x27;bar&#x27;</span>,xAxisIndex:<span class="n">1</span>,yAxisIndex:<span class="n">1</span>,data:ohlc.map((_,i)=&gt;<span class="n">20</span>+(i*<span class="n">37</span>)%<span class="n">85</span>),itemStyle:{color:(p:any)=&gt;palette[p.dataIndex%palette.length],opacity:.<span class="n">55</span>}}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/radar-transparent.png" alt="Radar" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">08 · profile</div>
+          <h2>Radar</h2>
+          <p class="blurb">How do spacecraft subsystems trade performance for resilience?</p>
+          <div class="tags"><span class="tag">radar</span><span class="tag">engineering</span><span class="tag">comparison</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const radar:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;SPACECRAFT RESILIENCE PROFILE&#x27;</span>,subtext:<span class="s">&#x27;THREE DESIGNS / SIX SUBSYSTEMS&#x27;</span>},legend:{data:[<span class="s">&#x27;Aster&#x27;</span>,<span class="s">&#x27;Boreal&#x27;</span>,<span class="s">&#x27;Cygnus&#x27;</span>],right:<span class="n">90</span>,top:<span class="n">80</span>,textStyle:{color:muted}},radar:{center:[<span class="s">&#x27;52%&#x27;</span>,<span class="s">&#x27;55%&#x27;</span>],radius:<span class="s">&#x27;65%&#x27;</span>,splitNumber:<span class="n">6</span>,indicator:[<span class="s">&#x27;Power&#x27;</span>,<span class="s">&#x27;Thermal&#x27;</span>,<span class="s">&#x27;Comms&#x27;</span>,<span class="s">&#x27;Guidance&#x27;</span>,<span class="s">&#x27;Science&#x27;</span>,<span class="s">&#x27;Repair&#x27;</span>].map(name=&gt;({name,max:<span class="n">100</span>,color:muted})),axisLine:{lineStyle:{color:<span class="s">&#x27;rgba(125,154,175,.38)&#x27;</span>}},splitLine:{lineStyle:{color:<span class="s">&#x27;rgba(125,154,175,.24)&#x27;</span>}},splitArea:{areaStyle:{color:[<span class="s">&#x27;rgba(18,36,57,.08)&#x27;</span>,<span class="s">&#x27;rgba(18,36,57,.18)&#x27;</span>]}}},series:[{type:<span class="s">&#x27;radar&#x27;</span>,symbolSize:<span class="n">7</span>,lineStyle:{width:<span class="n">3</span>},areaStyle:{opacity:.<span class="n">16</span>},data:[{name:<span class="s">&#x27;Aster&#x27;</span>,value:[<span class="n">92</span>,<span class="n">66</span>,<span class="n">78</span>,<span class="n">84</span>,<span class="n">55</span>,<span class="n">73</span>]},{name:<span class="s">&#x27;Boreal&#x27;</span>,value:[<span class="n">71</span>,<span class="n">88</span>,<span class="n">65</span>,<span class="n">72</span>,<span class="n">82</span>,<span class="n">61</span>]},{name:<span class="s">&#x27;Cygnus&#x27;</span>,value:[<span class="n">80</span>,<span class="n">73</span>,<span class="n">92</span>,<span class="n">64</span>,<span class="n">69</span>,<span class="n">88</span>]}]}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/heatmap-transparent.png" alt="Heatmap" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">09 · matrix</div>
+          <h2>Heatmap</h2>
+          <p class="blurb">Where are service dependencies both slow and frequent?</p>
+          <div class="tags"><span class="tag">heatmap</span><span class="tag">matrix</span><span class="tag">operations</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const heatmap:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;SERVICE DEPENDENCY PRESSURE&#x27;</span>,subtext:<span class="s">&#x27;CALL FREQUENCY × LATENCY RISK&#x27;</span>},grid:{left:<span class="n">160</span>,right:<span class="n">110</span>,top:<span class="n">175</span>,bottom:<span class="n">95</span>},xAxis:{type:<span class="s">&#x27;category&#x27;</span>,data:services,axisLabel:{color:muted},splitArea:{show:true}},yAxis:{type:<span class="s">&#x27;category&#x27;</span>,data:services,axisLabel:{color:muted},splitArea:{show:true}},visualMap:{min:<span class="n">0</span>,max:<span class="n">65</span>,right:<span class="n">35</span>,top:<span class="s">&#x27;middle&#x27;</span>,inRange:{color:[<span class="s">&#x27;#142744&#x27;</span>,<span class="s">&#x27;#315e86&#x27;</span>,<span class="s">&#x27;#54d6c6&#x27;</span>,<span class="s">&#x27;#ffd166&#x27;</span>,<span class="s">&#x27;#ff6f91&#x27;</span>]},textStyle:{color:muted}},series:[{type:<span class="s">&#x27;heatmap&#x27;</span>,data:matrixData,label:{show:true,color:ink},itemStyle:{borderColor:<span class="s">&#x27;#102035&#x27;</span>,borderWidth:<span class="n">3</span>},emphasis:{itemStyle:{shadowBlur:<span class="n">10</span>,shadowColor:<span class="s">&#x27;#fff&#x27;</span>}}}]};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/gauge-cluster-transparent.png" alt="Gauge cluster" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">10 · monitoring</div>
+          <h2>Gauge cluster</h2>
+          <p class="blurb">Can a compact instrument panel communicate system health?</p>
+          <div class="tags"><span class="tag">gauge</span><span class="tag">dashboard</span><span class="tag">health</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const gaugeCluster:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;SYSTEM HEALTH INSTRUMENTS&#x27;</span>,subtext:<span class="s">&#x27;CAPACITY, BACKLOG, HIT RATE, AND SLO&#x27;</span>},series:gauges as any};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/funnel-transparent.png" alt="Funnel" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">11 · process</div>
+          <h2>Funnel</h2>
+          <p class="blurb">Where does a scientific recruitment pipeline lose candidates?</p>
+          <div class="tags"><span class="tag">funnel</span><span class="tag">process</span><span class="tag">conversion</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const funnel:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;RESEARCH COHORT PIPELINE&#x27;</span>,subtext:<span class="s">&#x27;WHERE CANDIDATES LEAVE THE PROCESS&#x27;</span>},legend:{left:<span class="n">80</span>,bottom:<span class="n">40</span>,textStyle:{color:muted}},series:[{type:<span class="s">&#x27;funnel&#x27;</span>,left:<span class="s">&#x27;18%&#x27;</span>,top:<span class="n">165</span>,bottom:<span class="n">80</span>,width:<span class="s">&#x27;64%&#x27;</span>,min:<span class="n">0</span>,max:<span class="n">2400</span>,minSize:<span class="s">&#x27;12%&#x27;</span>,maxSize:<span class="s">&#x27;100%&#x27;</span>,sort:<span class="s">&#x27;descending&#x27;</span>,gap:<span class="n">6</span>,label:{show:true,position:<span class="s">&#x27;inside&#x27;</span>,color:<span class="s">&#x27;#f6fbff&#x27;</span>,fontSize:<span class="n">15</span>,formatter:<span class="s">&#x27;{b}  {c}&#x27;</span>},labelLine:{show:false},itemStyle:{borderColor:<span class="s">&#x27;#0c192b&#x27;</span>,borderWidth:<span class="n">3</span>},data:[[<span class="s">&#x27;Discovered&#x27;</span>,<span class="n">2400</span>],[<span class="s">&#x27;Eligible&#x27;</span>,<span class="n">1460</span>],[<span class="s">&#x27;Invited&#x27;</span>,<span class="n">920</span>],[<span class="s">&#x27;Interviewed&#x27;</span>,<span class="n">510</span>],[<span class="s">&#x27;Selected&#x27;</span>,<span class="n">220</span>],[<span class="s">&#x27;Enrolled&#x27;</span>,<span class="n">168</span>]].map(([name,value],i)=&gt;({name,value,itemStyle:{color:palette[i%palette.length]}}))}] as any};
+</code></pre></details>
+        </div>
+      </article>
+      <article class="card">
+        <figure class="shot dark"><img src="out/river-transparent.png" alt="River" loading="lazy"></figure>
+        <div class="body">
+          <div class="idx">12 · temporal composition</div>
+          <h2>River</h2>
+          <p class="blurb">How do cultural themes rise and fall across decades?</p>
+          <div class="tags"><span class="tag">theme-river</span><span class="tag">streamgraph</span><span class="tag">culture</span><span class="tag">advanced</span></div>
+          <details><summary>src/main.ts</summary><pre><code>const river:EChartsOption={...base,title:{...base.title,text:<span class="s">&#x27;CULTURAL THEME RIVER&#x27;</span>,subtext:<span class="s">&#x27;SYNTHETIC LISTENING MODES / 1960–2031&#x27;</span>},singleAxis:{top:<span class="n">160</span>,bottom:<span class="n">80</span>,type:<span class="s">&#x27;time&#x27;</span>,axisLabel:{color:muted},axisLine:{lineStyle:{color:<span class="s">&#x27;#638198&#x27;</span>}}},series:[{type:<span class="s">&#x27;themeRiver&#x27;</span>,data:riverData,label:{show:false},emphasis:{focus:<span class="s">&#x27;series&#x27;</span>}}] as any};
+</code></pre></details>
+        </div>
+      </article>
+  </main>
+  <footer>
+    Generated by <code>tools/gallery.py</code> — regenerate with <code>just gallery</code>
+    after <code>just build</code>. Images are referenced from
+    <code>out/</code>, so open this file straight from the checkout.
+  </footer>
+</div>
+</body>
+</html>

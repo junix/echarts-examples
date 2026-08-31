@@ -1,0 +1,8 @@
+{
+  "title": "echarts-demos",
+  "library": "Apache ECharts 6",
+  "tagline": "Twelve information-dense ECharts scenes over a deliberately transparent presentation layer — sankey, sunburst, parallel coordinates, force graphs, treemaps, calendars, candlesticks and more.",
+  "rebuild": "just build",
+  "backdrop": "dark",
+  "code_search": "src/main.ts"
+}
